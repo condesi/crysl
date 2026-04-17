@@ -17,22 +17,22 @@ throughput = 77M+ simulations/sec
 
 ```bash
 # Live simulation status
-curl https://qomni.clanmarketer.com/crysl/simulation/status
+curl https://desarrollador.xyz/simulation/status
 
 # IEEE-754 determinism: 20 runs, variance = 0.000000000000
-curl https://qomni.clanmarketer.com/crysl/simulation/repeatability
+curl https://desarrollador.xyz/simulation/repeatability
 
 # Adversarial resilience: 100,000 corrupt inputs (NaN/inf/zero/negative), 0 panics
-curl https://qomni.clanmarketer.com/crysl/simulation/adversarial
+curl https://desarrollador.xyz/simulation/adversarial
 
 # Jitter stability: σ=4,922ns vs C++ σ=850,000ns
-curl https://qomni.clanmarketer.com/crysl/simulation/jitter_bench
+curl https://desarrollador.xyz/simulation/jitter_bench
 
 # Determinism proof with result hash — same input always produces same hash
-curl "https://qomni.clanmarketer.com/crysl/verify?runs=20"
+curl "https://desarrollador.xyz/verify?runs=20"
 
 # All 56 physics plans
-curl https://qomni.clanmarketer.com/crysl/plans
+curl https://desarrollador.xyz/plans
 ```
 
 Every response carries identity headers:
@@ -42,7 +42,7 @@ X-Deterministic: true
 X-IEEE-754: enforced
 ```
 
-**Live dashboard:** https://qomni.clanmarketer.com/crysl/demo/benchmark.html
+**Live dashboard:** https://desarrollador.xyz/demo/benchmark.html
 
 ---
 
@@ -50,7 +50,7 @@ X-IEEE-754: enforced
 
 ```bash
 # NFPA 20 fire pump sizing — bit-identical on every run, every server
-curl -X POST https://qomni.clanmarketer.com/crysl/api/plan/execute \
+curl -X POST https://desarrollador.xyz/api/plan/execute \
   -H "Content-Type: application/json" \
   -d '{"plan":"plan_pump_sizing","params":{"Q_gpm":500,"P_psi":100,"eff":0.75}}'
 ```
@@ -71,7 +71,7 @@ curl -X POST https://qomni.clanmarketer.com/crysl/api/plan/execute \
 
 ```bash
 # IEC 60364 voltage drop — 480V, 125A, 300ft run, AWG 2
-curl -X POST https://qomni.clanmarketer.com/crysl/api/plan/execute \
+curl -X POST https://desarrollador.xyz/api/plan/execute \
   -H "Content-Type: application/json" \
   -d '{"plan":"plan_voltage_drop","params":{"voltage_v":480,"current_a":125,"length_ft":300,"wire_size_awg":2}}'
 # result: 11.695181 V drop — same value, every time
@@ -128,7 +128,7 @@ Medical           — BMI, GFR, dosing, fluid balance
 ```
 
 ```bash
-curl https://qomni.clanmarketer.com/crysl/plans | jq '.[].name'
+curl https://desarrollador.xyz/plans | jq '.[].name'
 ```
 
 ---
@@ -176,4 +176,4 @@ Production access: percy.rojas@condesi.pe
 
 Percy Rojas Masgo — Condesi Perú / Qomni AI Lab  
 percy.rojas@condesi.pe  
-https://qomni.clanmarketer.com/crysl/demo/benchmark.html
+https://desarrollador.xyz/demo/benchmark.html
