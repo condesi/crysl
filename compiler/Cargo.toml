@@ -1,8 +1,8 @@
 [package]
 name    = "crysl"
-version = "0.1.6"
+version = "0.2.0"
 edition = "2021"
-description = "CRYS-L compiler — Crystal Language for ternary AI inference"
+description = "CRYS-L compiler — Crystal Language for ternary AI inference (v2.0: typed units, plan engine, intent parser)"
 authors = ["Percy Rojas Masgo <percy.rojas@condesi.pe>"]
 license = "Apache-2.0"
 

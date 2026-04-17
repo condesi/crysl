@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRYS-L — Publications & Documentation</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#04060a;color:#c8d6e5;font:14px/1.7 'JetBrains Mono','Fira Code',monospace;padding:40px 20px;max-width:900px;margin:0 auto}
+h1{color:#00e5ff;font-size:1.6rem;letter-spacing:3px;margin-bottom:6px}
+.sub{color:#4a5a6e;font-size:11px;letter-spacing:2px;margin-bottom:40px}
+h2{color:#e040fb;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;margin:32px 0 12px;border-bottom:1px solid #0f1e2e;padding-bottom:6px}
+.card{background:#080d14;border:1px solid #0f1e2e;border-radius:6px;padding:16px 20px;margin-bottom:12px;transition:border-color .2s}
+.card:hover{border-color:#00e5ff}
+.card-title{color:#00e5ff;font-weight:700;font-size:13px;margin-bottom:4px}
+.card-desc{color:#4a5a6e;font-size:11px;margin-bottom:10px}
+.card-links{display:flex;gap:10px;flex-wrap:wrap}
+.btn{padding:5px 14px;border-radius:4px;font:11px inherit;text-decoration:none;font-weight:700;letter-spacing:1px;cursor:pointer}
+.btn-cyan{background:rgba(0,229,255,.1);color:#00e5ff;border:1px solid rgba(0,229,255,.3)}
+.btn-cyan:hover{background:rgba(0,229,255,.2)}
+.btn-mag{background:rgba(224,64,251,.1);color:#e040fb;border:1px solid rgba(224,64,251,.3)}
+.btn-mag:hover{background:rgba(224,64,251,.2)}
+.metric-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:32px}
+.metric{background:#080d14;border:1px solid #0f1e2e;border-radius:6px;padding:12px 20px;text-align:center;min-width:140px}
+.metric .val{font-size:1.4rem;color:#00e676;font-weight:700}
+.metric .lbl{font-size:9px;color:#4a5a6e;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:1px;margin-right:4px;text-transform:uppercase}
+.tag-new{background:rgba(0,230,118,.15);color:#00e676;border:1px solid rgba(0,230,118,.3)}
+.tag-live{background:rgba(0,229,255,.15);color:#00e5ff;border:1px solid rgba(0,229,255,.3)}
+.tag-preprint{background:rgba(224,64,251,.15);color:#e040fb;border:1px solid rgba(224,64,251,.3)}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid #0f1e2e;color:#2a3a4e;font-size:10px;text-align:center}
+</style>
+</head>
+<body>
+
+<h1>● CRYS-L — PUBLICATIONS</h1>
+<div class="sub">Qomni AI Lab · Condesi Perú · April 2026 · percy.rojas@condesi.pe</div>
+
+<div class="metric-row">
+  <div class="metric"><div class="val">154M</div><div class="lbl">scenarios/second</div></div>
+  <div class="metric"><div class="val">1.84ms</div><div class="lbl">Pareto front (170 sol)</div></div>
+  <div class="metric"><div class="val">1.53B×</div><div class="lbl">vs LLM throughput</div></div>
+  <div class="metric"><div class="val">0</div><div class="lbl">panics / 1.28M inputs</div></div>
+  <div class="metric"><div class="val">254×</div><div class="lbl">lower jitter σ vs baseline</div></div>
+</div>
+
+<h2>Technical Papers</h2>
+
+<div class="card">
+  <div class="card-title">CRYS-L: A Domain-Specific Language for High-Throughput Deterministic Multi-Objective Engineering Optimization</div>
+  <div class="card-desc">
+    <span class="tag tag-preprint">PREPRINT</span>
+    <span class="tag tag-new">APRIL 2026</span>
+    <br>Percy Rojas Masgo — Qomni AI Lab, Condesi Perú<br>
+    Full paper: language spec, AVX2 kernel, 4 empirical benchmark proofs, API reference, neuro-symbolic positioning.
+  </div>
+  <div class="card-links">
+    <a class="btn btn-cyan" href="01_main_paper.md">Read Paper (Markdown)</a>
+    <a class="btn btn-mag" href="../benchmark.html">Live Benchmarks</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">API Documentation v3.2 — CRYS-L REST Interface</div>
+  <div class="card-desc">
+    <span class="tag tag-live">LIVE</span>
+    Complete API reference: oracle syntax, compilation backends, REST endpoints, WebSocket stream, code examples (Python, JS, Rust, curl), domain catalog.
+  </div>
+  <div class="card-links">
+    <a class="btn btn-cyan" href="03_api_docs.md">API Docs (Markdown)</a>
+    <a class="btn btn-mag" href="https://qomni.clanmarketer.com/crysl/api/health">API Health Check</a>
+  </div>
+</div>
+
+<h2>Community Posts</h2>
+
+<div class="card">
+  <div class="card-title">Forum & Community Announcement Package</div>
+  <div class="card-desc">
+    <span class="tag tag-new">READY TO POST</span>
+    Formatted posts for: Hacker News (Show HN), r/MachineLearning, r/rust, r/ProgrammingLanguages, arXiv announcement, ResearchGate abstract, LinkedIn article.
+  </div>
+  <div class="card-links">
+    <a class="btn btn-cyan" href="02_forum_posts.md">All Forum Posts</a>
+  </div>
+</div>
+
+<h2>Live Verification</h2>
+
+<div class="card">
+  <div class="card-title">Real-Time Benchmark Dashboard</div>
+  <div class="card-desc">
+    <span class="tag tag-live">LIVE</span>
+    All 4 proofs run server-side in real time. Results are not simulated or pre-recorded. WebSocket heatmap shows live Pareto front evolution.
+  </div>
+  <div class="card-links">
+    <a class="btn btn-cyan" href="../benchmark.html">Open Dashboard</a>
+    <a class="btn btn-mag" href="https://qomni.clanmarketer.com/crysl/api/benchmark/all">Run All Proofs (JSON)</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Public API — Try It Now</div>
+  <div class="card-desc">No authentication required for benchmark endpoints.</div>
+  <div class="card-links">
+    <a class="btn btn-cyan" href="https://qomni.clanmarketer.com/crysl/api/simulation/simd_density">SIMD Proof</a>
+    <a class="btn btn-cyan" href="https://qomni.clanmarketer.com/crysl/api/benchmark/vs_llm">LLM Factor</a>
+    <a class="btn btn-mag" href="https://qomni.clanmarketer.com/crysl/api/health">Health</a>
+  </div>
+</div>
+
+<h2>Key Claims Summary</h2>
+
+<div class="card">
+  <div class="card-title">Proof 1 — Jitter Determinism (SCHED_FIFO, 10,000 ticks)</div>
+  <div class="card-desc">
+    σ = 3,334 ns · p99 = 18,154 ns · 254× lower σ than untuned Linux baseline (SCHED_OTHER, ~850,000 ns σ).<br>
+    <em>Note: reference baseline is intentionally conservative (no CPU pinning, no RT tuning) — characterizes the problem class.</em>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Proof 2 — SIMD Saturation (AVX2 + FMA)</div>
+  <div class="card-desc">
+    154,439,021 scenarios/s · 0.0450 scenarios/clock-cycle · 16.9% of AVX2 theoretical max.<br>
+    <em>Utilization is memory-bandwidth limited (40KB SoA working set), not compute limited. Theoretical max assumes pure compute with no memory traffic.</em>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Proof 3 — Adversarial Resilience (1.28M poison inputs)</div>
+  <div class="card-desc">
+    0 panics · 0 undefined behavior · 61.2M/s throughput under attack · valid_frac drops 100%→50% as designed.<br>
+    <em>NaN×0=NaN per IEEE 754-2008 §6.2 is expected behavior. The critical guarantee is zero panics and no UB, not zero NaN outputs.</em>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Proof 4 — Throughput Ratio vs. LLM Sequential Inference</div>
+  <div class="card-desc">
+    Paper figure: 1,532,567,050× (conservative, based on 12s / 7.83ns/tick).<br>
+    Measured: 1,853,268,252× (dedicated CPU benchmark).<br>
+    170 Pareto-optimal solutions found in 1.84ms.<br>
+    <em>This ratio quantifies throughput for configuration space enumeration only. It is not a claim about reasoning quality.</em>
+  </div>
+</div>
+
+<footer>
+  CRYS-L v3.2 · Qomni AI Lab · Condesi Perú · April 2026 · percy.rojas@condesi.pe<br>
+  All benchmark results are live and reproducible. Hardware: AMD EPYC 12-core, 48GB RAM, Ubuntu 24.04, AVX2+FMA.
+</footer>
+
+</body>
+</html>

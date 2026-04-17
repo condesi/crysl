@@ -168,6 +168,6 @@ Base URL: `https://qomni.clanmarketer.com/crysl/api`
 
 CRYS-L is the deterministic compute substrate of **Qomni** — a hybrid neuro-symbolic AI platform for engineering decision support.
 
-- **Author**: Percy Rojas Masgo — [percy@condesi.pe](mailto:percy@condesi.pe)
+- **Author**: Percy Rojas Masgo — [percy.rojas@condesi.pe](mailto:percy.rojas@condesi.pe)
 - **Organization**: Qomni AI Lab · Condesi Perú
 - **License**: Apache 2.0
