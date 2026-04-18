@@ -438,7 +438,7 @@ fn validate_plan_physics(plan_name: &str, params: &std::collections::HashMap<Str
             if q <= 0.0 { return Err(format!("assertion failed: flow must be positive (Q={})", q)); }
             if c <= 0.0 { return Err(format!("assertion failed: Hazen-Williams C must be positive (C={})", c)); }
             if d <= 0.0 { return Err(format!("assertion failed: pipe diameter must be positive (D={})", d)); }
-            if d < 0.006 { return Err(format!("assertion failed: D={:.6}m = {:.3}in below engineering minimum. Smallest commercial pipe: NPS 1/8in = 6.35mm. NFPA 13 fire branch min: 1in = 0.0254m. Near-zero D causes overflow. — Smallest commercial pipe: NPS 1/8in = 6.35mm. NFPA 13 fire branch min: 1in = 0.0254m.", d, d*39.3701)); }
+            if d < 0.006 { return Err(format!("assertion failed: D={:.6}m = {:.3}in below engineering minimum. Smallest commercial pipe: NPS 1/8in = 6.35mm. NFPA 13 fire branch min: 1in = 0.0254m. Near-zero D causes numerical overflow.", d, d*39.3701)); }
             if d > 10.0 { return Err(format!("assertion failed: D={}m exceeds practical max (10m / 33ft). Check units -- mm instead of m?", d)); }
             if l <= 0.0 { return Err(format!("assertion failed: pipe length must be positive (L={})", l)); }
             if l > 1_000_000.0 { return Err(format!("assertion failed: pipe length L={} km exceeds plausible engineering range (max 1,000 km)", l/1000.0)); }
