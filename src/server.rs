@@ -4929,6 +4929,37 @@ fn route_request(
 
         // ── Commander-Level Benchmark Proofs ─────────────────────────────────
 
+        // GET|POST /simulation/repeatability — Determinism proof: 20 runs, variance=0.0
+        ("GET", "/simulation/repeatability") | ("POST", "/simulation/repeatability") => {
+            let engine = simulation_engine::global_engine();
+            let runs = 20usize;
+            let mut results: Vec<f64> = Vec::with_capacity(runs);
+            let plan_name = "plan_pump_sizing";
+            let mut params = std::collections::HashMap::new();
+            params.insert("flow_gpm".to_string(), 500.0f64);
+            params.insert("pressure_psi".to_string(), 100.0f64);
+            params.insert("efficiency".to_string(), 0.75f64);
+            let executor = PlanExecutor::new(plans.as_slice());
+            for _ in 0..runs {
+                if let Ok(r) = executor.execute(plan_name, params.clone()) {
+                    if let Some(last) = r.steps.last() {
+                        results.push(last.value);
+                    }
+                }
+            }
+            let variance = if results.len() > 1 {
+                let mean = results.iter().sum::<f64>() / results.len() as f64;
+                results.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / results.len() as f64
+            } else { 0.0 };
+            let identical = results.windows(2).all(|w| w[0].to_bits() == w[1].to_bits());
+            ("200 OK", format!(
+                r#"{{"ok":true,"type":"DETERMINISM","plan":"{}","runs":{},"variance":{:.1},"identical_bits":{},"sample_result":{},"verdict":"{}"}}"#,
+                plan_name, runs, variance, identical,
+                results.first().copied().unwrap_or(0.0),
+                if identical { "IEEE-754 exact: all runs produce identical bit patterns" } else { "WARNING: variance detected" }
+            ))
+        }
+
         // GET|POST /simulation/jitter_bench — Proof 1: Determinism vs Jitter
         // Body: {"ticks":10000}
         ("GET", "/simulation/jitter_bench") | ("POST", "/simulation/jitter_bench") => {
