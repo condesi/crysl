@@ -652,6 +652,16 @@ fn route_request(
         }
 
         // ── Plan execution ────────────────────────────────────────
+        // GET /plan/execute — list available plans + usage
+        ("GET", "/plan/execute") => {
+            let plan_names: Vec<String> = plans.iter().map(|p| p.name.clone()).collect();
+            let names_json = plan_names.iter().map(|n| format!("\"{}\"", n)).collect::<Vec<_>>().join(",");
+            ("200 OK", format!(
+                r#"{{"ok":true,"usage":"POST /plan/execute","body":{{"plan":"<plan_name>","params":{{}}}},"available_plans":[{}]}}"#,
+                names_json
+            ))
+        }
+
         // POST /plan/execute
         // Body: {"plan":"plan_name","params":{"area":1200,"K":5.6}}
         ("POST", "/plan/execute") => {
@@ -4919,30 +4929,30 @@ fn route_request(
 
         // ── Commander-Level Benchmark Proofs ─────────────────────────────────
 
-        // POST /simulation/jitter_bench — Proof 1: Determinism vs Jitter
+        // GET|POST /simulation/jitter_bench — Proof 1: Determinism vs Jitter
         // Body: {"ticks":10000}
-        ("POST", "/simulation/jitter_bench") => {
+        ("GET", "/simulation/jitter_bench") | ("POST", "/simulation/jitter_bench") => {
             let ticks = extract_json_int_body(body, "ticks").unwrap_or(10000).clamp(1000, 100000) as usize;
             let result = benchmark_proofs::run_jitter_bench(ticks);
             ("200 OK", benchmark_proofs::jitter_to_json(&result))
         }
 
-        // GET /simulation/simd_density — Proof 2: SIMD Saturation
-        ("GET", "/simulation/simd_density") => {
+        // GET|POST /simulation/simd_density — Proof 2: SIMD Saturation
+        ("GET", "/simulation/simd_density") | ("POST", "/simulation/simd_density") => {
             let result = benchmark_proofs::compute_simd_density(simulation_engine::global_engine());
             ("200 OK", benchmark_proofs::simd_density_to_json(&result))
         }
 
-        // POST /simulation/adversarial — Proof 3: Poison Pill Shield
+        // GET|POST /simulation/adversarial — Proof 3: Poison Pill Shield
         // Body: {"ticks":5000}
-        ("POST", "/simulation/adversarial") => {
+        ("GET", "/simulation/adversarial") | ("POST", "/simulation/adversarial") => {
             let ticks = extract_json_int_body(body, "ticks").unwrap_or(5000).clamp(500, 50000) as usize;
             let result = benchmark_proofs::run_adversarial(ticks);
             ("200 OK", benchmark_proofs::adversarial_to_json(&result))
         }
 
-        // GET /benchmark/vs_llm — Proof 4: LLM Speedup Factor
-        ("GET", "/benchmark/vs_llm") => {
+        // GET|POST /benchmark/vs_llm — Proof 4: LLM Speedup Factor
+        ("GET", "/benchmark/vs_llm") | ("POST", "/benchmark/vs_llm") => {
             let result = benchmark_proofs::compute_llm_factor(simulation_engine::global_engine());
             ("200 OK", benchmark_proofs::llm_factor_to_json(&result))
         }
