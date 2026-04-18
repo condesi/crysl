@@ -97,7 +97,7 @@ ok "Binary installed: $BINARY"
 $BINARY --version 2>/dev/null || info "(--version not implemented, binary is present)"
 
 # ─── 7. stdlib check ──────────────────────────────────────────────────────────
-STDLIB="$INSTALL_DIR/stdlib/all_domains.crys"
+STDLIB="$INSTALL_DIR/stdlib/all_domains.qomn"
 if [[ ! -f "$STDLIB" ]]; then
     fail "stdlib not found at $STDLIB -- check repo structure"
 fi
