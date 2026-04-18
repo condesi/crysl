@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L — AOT Plan Compiler v2.0 (Level 2: Full Plan JIT)
+// QOMN — AOT Plan Compiler v2.0 (Level 2: Full Plan JIT)
 // Percy Rojas M. · Qomni AI Lab · 2026
 //
 // Level 1 (v1.0): Pre-resolved dispatch tables — ~1,400 ns/plan
@@ -258,7 +258,7 @@ impl AotPlanCache {
         let plan = self.plans.get(plan_name)
             .ok_or_else(|| format!("plan '{}' not found", plan_name))?;
 
-        let sym = format!("crysl_plan_{}", plan_name.replace(['-', '.', ' '], "_"));
+        let sym = format!("qomn_plan_{}", plan_name.replace(['-', '.', ' '], "_"));
 
         // Function signature: fn(params: *const f64, n_params: usize, results: *mut f64) -> i32
         let mut sig = jit_module.make_signature();
@@ -1111,7 +1111,7 @@ impl AotPlanCache {
                 None => continue,
             };
 
-            let sym = format!("crysl_reg_{}", tp.name.replace(['-', '.', ' '], "_"));
+            let sym = format!("qomn_reg_{}", tp.name.replace(['-', '.', ' '], "_"));
 
             // Signature: (p0: f64, ..., pN-1: f64, results: *mut f64) -> i32
             let mut sig = jit_module.make_signature();

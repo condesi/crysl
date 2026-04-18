@@ -1,5 +1,5 @@
 ---
-title: 'CRYS-L: A Deterministic Execution Engine for Safety-Critical Engineering Computations'
+title: 'QOMN: A Deterministic Execution Engine for Safety-Critical Engineering Computations'
 tags:
   - Rust
   - deterministic computing
@@ -26,7 +26,7 @@ IEC 60364 (electrical installations), and ASCE 7 (structural loads)—require
 that computational results be **mathematically reproducible**: given identical
 inputs, every server must produce bit-identical outputs under any load.
 
-**CRYS-L** is an execution engine that enforces this property through three
+**QOMN** is an execution engine that enforces this property through three
 mechanisms: (1) the *branchless oracle pattern*, which eliminates undefined
 behavior and enables SIMD vectorization; (2) Cranelift JIT compilation
 targeting AVX2; and (3) strict IEEE-754 enforcement at the compiler level.
@@ -47,7 +47,7 @@ certified reproducibility requirement:
 3. **Unsafe C++**: `if (flow < 1.0) return NAN` introduces a branch that
    prevents SIMD vectorization and propagates NaN silently on invalid input.
 
-CRYS-L fills this gap by providing a domain-specific language for physics
+QOMN fills this gap by providing a domain-specific language for physics
 formulas that compiles to IEEE-754-exact machine code with provably zero
 variance across runs, servers, and loads.
 
@@ -69,7 +69,7 @@ allows AVX2 to evaluate 4 scenarios in a single `VMULPD` instruction.
 
 # Architecture
 
-CRYS-L is implemented in 2,843 lines of Rust. Physics expressions compile
+QOMN is implemented in 2,843 lines of Rust. Physics expressions compile
 to Cranelift IR [@cranelift], which generates AVX2 machine code with
 FMA contraction disabled to preserve IEEE-754 reproducibility. Compiled
 plans are cached keyed by expression hash.
@@ -87,7 +87,7 @@ curl "https://desarrollador.xyz/verify?runs=20"
 
 | System | Throughput | Determinism |
 |--------|-----------|-------------|
-| CRYS-L v3.2 (AVX2) | 1.53 B scenarios/s | IEEE-754 exact |
+| QOMN v3.2 (AVX2) | 1.53 B scenarios/s | IEEE-754 exact |
 | C++ GCC -O3 | ~5 M/s | UB on NaN inputs |
 | Python/NumPy | ~0.2 M/s | Float drift across versions |
 | GPT-4 Turbo | 0.08 answers/s | Stochastic |

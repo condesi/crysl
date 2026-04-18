@@ -2,7 +2,7 @@ TO: research-outreach@google.com
 CC: brain-team@google.com
 BCC: percy.rojas@condesi.pe
 FROM: percy.rojas@condesi.pe
-SUBJECT: CRYS-L + Qomni: 117M ops/s deterministic engineering AI — partnership proposal
+SUBJECT: QOMN + Qomni: 117M ops/s deterministic engineering AI — partnership proposal
 
 Dear Google Research / Google DeepMind Team,
 
@@ -11,7 +11,7 @@ I am writing to share a technical system I believe has direct strategic value fo
 
 ─── THE SYSTEM ───────────────────────────────────────────────────────────────
 
-CRYS-L v3.2 + Qomni Engine v7.4 is a hybrid neuro-symbolic AI that computes
+QOMN v3.2 + Qomni Engine v7.4 is a hybrid neuro-symbolic AI that computes
 engineering calculations at 117 million operations per second with:
 
   • Zero numeric variance (bit-exact results, verified across 10-20 repeated runs)
@@ -26,42 +26,42 @@ engineering calculations at 117 million operations per second with:
 1. INFERENCE COST (Google Cloud / Gemini)
    Google spends billions on energy for LLM inference. For deterministic tasks
    (structured calculations, compliance checking, arithmetic validation),
-   replacing LLM calls with CRYS-L oracles reduces compute cost by 88,888×
-   per operation. A single server running CRYS-L handles what would otherwise
+   replacing LLM calls with QOMN oracles reduces compute cost by 88,888×
+   per operation. A single server running QOMN handles what would otherwise
    require a fleet of GPU servers for LLM inference.
 
 2. EDGE COMPUTING (Google Pixel / Nest / Autonomous Systems)
-   CRYS-L compiles to WebAssembly for edge deployment. At 9µs compute with
+   QOMN compiles to WebAssembly for edge deployment. At 9µs compute with
    zero network dependency, a Google Pixel chip can run engineering-grade
    calculations locally. Current LLM-based alternatives require cloud roundtrips.
 
 3. SILICON CO-DESIGN (Google TPU)
-   CRYS-L's branchless AVX2 pattern saturates silicon at 100% utilization
+   QOMN's branchless AVX2 pattern saturates silicon at 100% utilization
    via vectorized operations. The same technique applies to TPU matrix units.
    We have demonstrated that software-hardware co-design for deterministic
    workloads yields 1.53 billion× gains over naive implementations.
 
 4. TRUST IN AI (Google's responsible AI initiative)
-   CRYS-L outputs are mathematically verifiable. When a structural engineer
+   QOMN outputs are mathematically verifiable. When a structural engineer
    asks about beam deflection, they get an IEEE-754-exact result, not a
    "probable" answer. This is architecturally impossible to achieve with
    autoregressive models.
 
 ─── LIVE EVIDENCE (no slides, pure data) ─────────────────────────────────────
 
-  Demo:       https://qomni.clanmarketer.com/crysl/
-  Benchmarks: https://qomni.clanmarketer.com/crysl/demo/benchmark.html
-  Source:     https://github.com/condesi/crysl
+  Demo:       https://qomni.clanmarketer.com/qomn/
+  Benchmarks: https://qomni.clanmarketer.com/qomn/demo/benchmark.html
+  Source:     https://github.com/condesi/qomn
 
 Reproduce in 10 seconds:
-  curl https://qomni.clanmarketer.com/crysl/api/simulation/simd_density
-  curl https://qomni.clanmarketer.com/crysl/api/benchmark/vs_llm
+  curl https://qomni.clanmarketer.com/qomn/api/simulation/simd_density
+  curl https://qomni.clanmarketer.com/qomn/api/benchmark/vs_llm
 
 ─── WHAT I AM PROPOSING ──────────────────────────────────────────────────────
 
   Option A: Research collaboration (joint paper, benchmark comparison)
   Option B: Strategic investment / acquisition discussion
-  Option C: Google Cloud integration (CRYS-L as a managed compute service)
+  Option C: Google Cloud integration (QOMN as a managed compute service)
   Option D: Google Research residency / visiting researcher engagement
 
 The system is Apache-2.0 licensed and production-deployed. I am available
@@ -75,4 +75,4 @@ Founder · Qomni AI Lab
 percy.rojas@condesi.pe
 +51 932 061 050
 https://qomni.clanmarketer.com/
-https://github.com/condesi/crysl
+https://github.com/condesi/qomn

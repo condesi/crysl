@@ -1,4 +1,4 @@
-// CRYS-L Standard Library — Electrical Engineering
+// QOMN Standard Library — Electrical Engineering
 // Percy Rojas M. · Qomni AI Lab · 2026
 // Standards: IEC 60038, IEC 60228, NEC, IEEE
 // NOTE: rho in Ω·mm²/m (copper=0.0172, aluminium=0.028) — avoids float precision loss

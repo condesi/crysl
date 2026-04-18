@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// CRYS-L — Benchmark Proof Suite (Commander-Level Evidence)
+// QOMN — Benchmark Proof Suite (Commander-Level Evidence)
 //
 // Proof 1: Jitter Determinism  — SCHED_FIFO + per-tick latency histogram
 // Proof 2: SIMD Saturation     — scenarios/clock-cycle vs. AVX2 theoretical
@@ -148,7 +148,7 @@ pub fn jitter_to_json(r: &JitterResult) -> String {
     let cpp_sigma_estimate  = 850_000.0f64;  // ~850µs sigma
 
     format!(
-        r#"{{"ok":true,"proof":"jitter_determinism","ticks":{},"duration_ms":{:.2},"sched_fifo":{},"cpu_mhz":{:.1},"crysl":{{"min_ns":{},"mean_ns":{:.1},"p50_ns":{},"p95_ns":{},"p99_ns":{},"p999_ns":{},"max_ns":{},"sigma_ns":{:.1}}},"cpp_baseline":{{"p99_ns":{},"sigma_ns":{:.1},"note":"typical untuned Linux, SCHED_OTHER, no core isolation"}},"jitter_ratio":{:.1},"verdict":"CRYS-L sigma={}ns vs C++ sigma={}ns — {}x flatter latency distribution","histogram":[{}]}}"#,
+        r#"{{"ok":true,"proof":"jitter_determinism","ticks":{},"duration_ms":{:.2},"sched_fifo":{},"cpu_mhz":{:.1},"qomn":{{"min_ns":{},"mean_ns":{:.1},"p50_ns":{},"p95_ns":{},"p99_ns":{},"p999_ns":{},"max_ns":{},"sigma_ns":{:.1}}},"cpp_baseline":{{"p99_ns":{},"sigma_ns":{:.1},"note":"typical untuned Linux, SCHED_OTHER, no core isolation"}},"jitter_ratio":{:.1},"verdict":"QOMN sigma={}ns vs C++ sigma={}ns — {}x flatter latency distribution","histogram":[{}]}}"#,
         r.ticks, r.duration_ms, r.sched_fifo, r.cpu_mhz,
         r.min_ns, r.mean_ns, r.p50_ns, r.p95_ns, r.p99_ns, r.p999_ns, r.max_ns, r.sigma_ns,
         cpp_p99_estimate_ns, cpp_sigma_estimate,
@@ -225,7 +225,7 @@ fn build_simd_result(per_s: u64, cpu_hz: f64) -> SimdResult {
 
 pub fn simd_density_to_json(r: &SimdResult) -> String {
     format!(
-        r#"{{"ok":true,"proof":"simd_saturation","cpu_mhz":{:.1},"kernel":"{}","avx2_lanes":{},"measured":{{"scenarios_per_s":{},"scenarios_per_cycle":{:.4}}},"theoretical":{{"max_scenarios_per_s":{:.0},"max_scenarios_per_cycle":{:.2}}},"simd_utilization_pct":{:.1},"interpretation":"CRYS-L executes {:.4} scenarios per clock cycle. AVX2 lanes={} × FMA fusion = physically impossible for branchy C++ code. Only branchless SIMD masks achieve this.","cpp_baseline":{{"scenarios_per_s":5000000,"note":"Typical C++ hydraulic solver with if/else, no SIMD vectorization"}}}}"#,
+        r#"{{"ok":true,"proof":"simd_saturation","cpu_mhz":{:.1},"kernel":"{}","avx2_lanes":{},"measured":{{"scenarios_per_s":{},"scenarios_per_cycle":{:.4}}},"theoretical":{{"max_scenarios_per_s":{:.0},"max_scenarios_per_cycle":{:.2}}},"simd_utilization_pct":{:.1},"interpretation":"QOMN executes {:.4} scenarios per clock cycle. AVX2 lanes={} × FMA fusion = physically impossible for branchy C++ code. Only branchless SIMD masks achieve this.","cpp_baseline":{{"scenarios_per_s":5000000,"note":"Typical C++ hydraulic solver with if/else, no SIMD vectorization"}}}}"#,
         r.cpu_mhz, r.kernel_path, r.avx2_lanes,
         r.scenarios_per_s, r.scenarios_per_cycle,
         r.theoretical_max, r.theoretical_max / (r.cpu_mhz * 1e6),
@@ -337,15 +337,15 @@ pub fn adversarial_to_json(r: &AdversarialResult) -> String {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PROOF 4: LLM Comparison Factor
-// CRYS-L processes 87–154M scenarios/s.
+// QOMN processes 87–154M scenarios/s.
 // GPT-4 Turbo: ~12s average to generate one answer (chain-of-thought).
-// One CRYS-L scenario = one "path" through the solution space.
-// In 12 seconds, CRYS-L traverses: 12 × 154M = 1.848 billion universes.
+// One QOMN scenario = one "path" through the solution space.
+// In 12 seconds, QOMN traverses: 12 × 154M = 1.848 billion universes.
 // ─────────────────────────────────────────────────────────────────────────────
 
 pub struct LlmCompareResult {
-    pub crysl_per_s:             u64,
-    pub crysl_12s_universes:     u64,
+    pub qomn_per_s:             u64,
+    pub qomn_12s_universes:     u64,
     pub llm_answers_per_12s:     f64,   // = 1.0
     pub speedup_factor:          f64,
     pub pareto_solutions_found:  usize,
@@ -384,8 +384,8 @@ pub fn compute_llm_factor(engine: &SimulationEngine) -> LlmCompareResult {
     let llm_equiv_s     = universes_12s as f64 * llm_response_s;
 
     LlmCompareResult {
-        crysl_per_s: per_s,
-        crysl_12s_universes: universes_12s,
+        qomn_per_s: per_s,
+        qomn_12s_universes: universes_12s,
         llm_answers_per_12s: 1.0,
         speedup_factor: speedup,
         pareto_solutions_found: pareto_size,
@@ -397,13 +397,13 @@ pub fn compute_llm_factor(engine: &SimulationEngine) -> LlmCompareResult {
 
 pub fn llm_factor_to_json(r: &LlmCompareResult) -> String {
     format!(
-        r#"{{"ok":true,"proof":"llm_speedup_factor","crysl":{{"scenarios_per_s":{},"in_12_seconds_universes":{},"pareto_solutions_per_call":{},"pareto_latency_ms":{:.4}}},"llm_gpt4_turbo":{{"answers_per_12s":{:.1},"avg_response_s":12.0,"pareto_universes_per_12s":1}},"speedup":{{"computed":{:.0},"paper_figure":{:.0},"llm_equivalent_time_s":{:.2e},"interpretation":"In the time GPT-4 generates 1 answer, CRYS-L has evaluated {} million distinct engineering realities and found the Pareto-optimal solution. The LLM is not in the same physics."}},"comparison_table":{{"crysl_pareto_ms":{:.4},"llm_pareto_estimate_s":"12.0","ratio":{:.0}}}}}"#,
-        r.crysl_per_s, r.crysl_12s_universes,
+        r#"{{"ok":true,"proof":"llm_speedup_factor","qomn":{{"scenarios_per_s":{},"in_12_seconds_universes":{},"pareto_solutions_per_call":{},"pareto_latency_ms":{:.4}}},"llm_gpt4_turbo":{{"answers_per_12s":{:.1},"avg_response_s":12.0,"pareto_universes_per_12s":1}},"speedup":{{"computed":{:.0},"paper_figure":{:.0},"llm_equivalent_time_s":{:.2e},"interpretation":"In the time GPT-4 generates 1 answer, QOMN has evaluated {} million distinct engineering realities and found the Pareto-optimal solution. The LLM is not in the same physics."}},"comparison_table":{{"qomn_pareto_ms":{:.4},"llm_pareto_estimate_s":"12.0","ratio":{:.0}}}}}"#,
+        r.qomn_per_s, r.qomn_12s_universes,
         r.pareto_solutions_found, r.pareto_time_ms,
         r.llm_answers_per_12s,
         r.speedup_factor, r.paper_speedup,
         r.llm_equivalent_time_s,
-        r.crysl_12s_universes / 1_000_000,
+        r.qomn_12s_universes / 1_000_000,
         r.pareto_time_ms,
         12_000.0 / r.pareto_time_ms
     )

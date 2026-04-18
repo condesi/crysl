@@ -3,13 +3,13 @@
 **Percy Rojas Masgo**
 Qomni AI Lab · Condesi Perú
 percy.rojas@condesi.pe
-https://qomni.clanmarketer.com/crysl/
+https://qomni.clanmarketer.com/qomn/
 
 ---
 
 ## Abstract
 
-We present **Qomni**, a hybrid neuro-symbolic AI system that combines a deterministic compiled execution engine (CRYS-L) with a multi-layer cognitive inference stack (Qomni Engine v7.4). Qomni solves the fundamental problem of large language models in engineering and safety-critical domains: **stochastic outputs, hallucinated calculations, and unpredictable latency**. Instead of generating probable answers, Qomni compiles domain knowledge into JIT-optimized oracles that produce mathematically verified, bit-exact results in 9µs (p50). The system processes 117 million verified engineering calculations per second while maintaining zero numeric variance across repeated executions. We demonstrate 1.53 billion× throughput advantage over sequential LLM inference on deterministic tasks, with a 9-layer inference cascade that achieves sub-millisecond responses via pattern recognition without re-computation. The full system comprises 207 engineered features, 12 Rust modules, 56 deterministic domain oracles, and a Universal Intent Router that correctly classifies and routes 8 distinct query classes without misrouting to default fallbacks.
+We present **Qomni**, a hybrid neuro-symbolic AI system that combines a deterministic compiled execution engine (QOMN) with a multi-layer cognitive inference stack (Qomni Engine v7.4). Qomni solves the fundamental problem of large language models in engineering and safety-critical domains: **stochastic outputs, hallucinated calculations, and unpredictable latency**. Instead of generating probable answers, Qomni compiles domain knowledge into JIT-optimized oracles that produce mathematically verified, bit-exact results in 9µs (p50). The system processes 117 million verified engineering calculations per second while maintaining zero numeric variance across repeated executions. We demonstrate 1.53 billion× throughput advantage over sequential LLM inference on deterministic tasks, with a 9-layer inference cascade that achieves sub-millisecond responses via pattern recognition without re-computation. The full system comprises 207 engineered features, 12 Rust modules, 56 deterministic domain oracles, and a Universal Intent Router that correctly classifies and routes 8 distinct query classes without misrouting to default fallbacks.
 
 **Keywords:** deterministic AI, JIT compilation, neuro-symbolic reasoning, engineering decision support, Pareto optimization, NaN-shield, cognitive inference cascade
 
@@ -30,12 +30,12 @@ Qomni proposes a different architecture: instead of asking a language model to c
 
 ### 1.1 Core Contributions
 
-1. **CRYS-L**: A compiled DSL for deterministic engineering oracles with JIT (Cranelift/LLVM) and AVX2 SIMD vectorization
+1. **QOMN**: A compiled DSL for deterministic engineering oracles with JIT (Cranelift/LLVM) and AVX2 SIMD vectorization
 2. **Qomni Engine v7.4**: A 9-layer cognitive inference cascade with lock-free architecture and 207 engineered features
 3. **Universal Intent Router**: Keyword-based NLU that routes 8 query classes without LLM overhead
 4. **NaN-Shield**: Branchless input validation that handles 100,000 adversarial inputs with 0 panics
 5. **Determinism Guarantee**: Bit-exact identical outputs across all executions (IEEE-754 compliant)
-6. **Empirical validation**: Live, reproducible benchmarks at https://qomni.clanmarketer.com/crysl/
+6. **Empirical validation**: Live, reproducible benchmarks at https://qomni.clanmarketer.com/qomn/
 
 ---
 
@@ -61,7 +61,7 @@ User Query (natural language)
     │            │                        │
     ▼            ▼                        ▼
 ┌───────┐  ┌──────────┐          ┌──────────────┐
-│CRYS-L │  │ Qomni    │          │  Evidence    │
+│QOMN │  │ Qomni    │          │  Evidence    │
 │Oracle │  │ Planner  │          │  Shortcuts   │
 │Engine │  │ (Python) │          │  (static)    │
 └───┬───┘  └────┬─────┘          └──────────────┘
@@ -97,9 +97,9 @@ User Query (natural language)
   + Recommendations
 ```
 
-### 2.2 CRYS-L: The Deterministic Compute Substrate
+### 2.2 QOMN: The Deterministic Compute Substrate
 
-CRYS-L (Crystal Language) is a compiled DSL designed for exhaustive engineering optimization. Key design decisions:
+QOMN (Crystal Language) is a compiled DSL designed for exhaustive engineering optimization. Key design decisions:
 
 **Branchless arithmetic**: Comparisons return `float` (0.0 or 1.0), enabling physics validation without branches:
 
@@ -150,7 +150,7 @@ The Qomni Engine (v7.4) is a 12-module Rust system implementing 207 features acr
 - v7.1: C4 (SHA-256 content addressing for response deduplication)
 - v7.2: H5 (web data delimiters), TUI Dashboard (`--tui` flag, `ratatui`)
 - v7.3: H4 (mesh peer authentication via HMAC-SHA256 secret)
-- v7.4: CRYS-L as primary compute backend, Crystal Kernel in chat pipeline
+- v7.4: QOMN as primary compute backend, Crystal Kernel in chat pipeline
 
 ### 2.4 Universal Intent Router
 
@@ -171,7 +171,7 @@ is_calculation        → domain planning pipeline
 
 ---
 
-## 3. CRYS-L Language Specification
+## 3. QOMN Language Specification
 
 ### 3.1 Core Types
 
@@ -195,7 +195,7 @@ oracle name(params...) -> return_type:
 
 ### 3.3 Branchless Pattern
 
-Standard conditional logic creates branch mispredictions on modern CPUs and prevents SIMD vectorization. CRYS-L uses the branchless pattern throughout:
+Standard conditional logic creates branch mispredictions on modern CPUs and prevents SIMD vectorization. QOMN uses the branchless pattern throughout:
 
 ```crystal
 # Conditional: if x > 0 then x else 0
@@ -238,12 +238,12 @@ The plan executor resolves parameter dependencies, calls oracles in DAG order, a
 
 | Mode | Throughput | Baseline | Speedup |
 |------|-----------|---------|---------|
-| CRYS-L JIT (single oracle) | 117,000,000 ops/s | — | — |
-| CRYS-L AVX2 sweep (batch) | 3,500,000,000 ops/s | — | — |
+| QOMN JIT (single oracle) | 117,000,000 ops/s | — | — |
+| QOMN AVX2 sweep (batch) | 3,500,000,000 ops/s | — | — |
 | Python equivalent | 2,288 ops/s | 1× | — |
 | GPT-4 Turbo (sequential) | ~1.25 calls/s | 1× | — |
-| CRYS-L vs Python | — | 2,288 ops/s | **1.53 billion×** |
-| CRYS-L vs LLM | — | ~1.25 ops/s | **93.6 million×** |
+| QOMN vs Python | — | 2,288 ops/s | **1.53 billion×** |
+| QOMN vs LLM | — | ~1.25 ops/s | **93.6 million×** |
 
 ### 4.2 Latency Distribution
 
@@ -263,7 +263,7 @@ The plan executor resolves parameter dependencies, calls oracles in DAG order, a
 | p95 | ~800µs | ~280ms |
 | p99 | ~2ms | ~420ms |
 
-**Key finding**: Compute is 23,000–26,000× faster than roundtrip. The 220ms roundtrip is 99.996% network/JSON overhead. CRYS-L compute is not the bottleneck.
+**Key finding**: Compute is 23,000–26,000× faster than roundtrip. The 220ms roundtrip is 99.996% network/JSON overhead. QOMN compute is not the bottleneck.
 
 ### 4.3 Determinism Verification
 
@@ -283,7 +283,7 @@ Comparison: GPT-4 produces different token sequences across runs even with tempe
 
 ### 4.4 Adversarial Resilience
 
-We tested CRYS-L with 100,000 adversarial inputs across 5 categories:
+We tested QOMN with 100,000 adversarial inputs across 5 categories:
 
 | Input class | Count | Panics | IEEE-754 violations | Result |
 |------------|-------|--------|--------------------|----|
@@ -402,7 +402,7 @@ Standards: CVSS v3.1, OWASP, NIST SP 800-63B
 
 ### 6.1 vs. Large Language Models
 
-| Property | GPT-4 / Gemini / LLMs | Qomni + CRYS-L |
+| Property | GPT-4 / Gemini / LLMs | Qomni + QOMN |
 |----------|------------------------|----------------|
 | Output type | Probable text | Exact float64 |
 | Determinism | No (temperature > 0) | Yes (IEEE-754 guarantee) |
@@ -416,7 +416,7 @@ Standards: CVSS v3.1, OWASP, NIST SP 800-63B
 
 ### 6.2 vs. Traditional Simulation Software (ANSYS, ETAP, SAP2000)
 
-| Property | Traditional FEA/FEM | Qomni + CRYS-L |
+| Property | Traditional FEA/FEM | Qomni + QOMN |
 |----------|--------------------|----|
 | Startup time | Minutes | Sub-millisecond |
 | Natural language interface | No | Yes |
@@ -428,7 +428,7 @@ Standards: CVSS v3.1, OWASP, NIST SP 800-63B
 
 ### 6.3 vs. Wolfram Alpha / Calculators
 
-| Property | Wolfram Alpha | Qomni + CRYS-L |
+| Property | Wolfram Alpha | Qomni + QOMN |
 |----------|--------------|---|
 | Batch processing | No | Yes (117M ops/s) |
 | Multi-objective Pareto | No | Yes |
@@ -441,8 +441,8 @@ Standards: CVSS v3.1, OWASP, NIST SP 800-63B
 
 ## 7. The Determinism Theorem
 
-**Theorem (CRYS-L Determinism):**
-For any oracle `f: ℝⁿ → ℝ` compiled by CRYS-L, and any input vector `x ∈ ℝⁿ`, the execution of `f(x)` on the same hardware produces the same bit-pattern output on every invocation.
+**Theorem (QOMN Determinism):**
+For any oracle `f: ℝⁿ → ℝ` compiled by QOMN, and any input vector `x ∈ ℝⁿ`, the execution of `f(x)` on the same hardware produces the same bit-pattern output on every invocation.
 
 **Proof sketch:**
 1. `f` is compiled to native machine code via Cranelift JIT or LLVM
@@ -452,7 +452,7 @@ For any oracle `f: ℝⁿ → ℝ` compiled by CRYS-L, and any input vector `x �
 5. The branchless pattern eliminates control-flow divergence
 6. Therefore `f(x) = f(x)` always, for all invocations on the same architecture
 
-**Caveat:** IEEE-754 guarantees hold per-architecture. Cross-architecture results may differ in the last bit for transcendental functions (sin, cos, exp) if the hardware uses extended precision (x87 80-bit). CRYS-L uses only algebraic operations (+, -, ×, ÷, √) where IEEE-754 gives exactly-rounded results, ensuring cross-machine reproducibility.
+**Caveat:** IEEE-754 guarantees hold per-architecture. Cross-architecture results may differ in the last bit for transcendental functions (sin, cos, exp) if the hardware uses extended precision (x87 80-bit). QOMN uses only algebraic operations (+, -, ×, ÷, √) where IEEE-754 gives exactly-rounded results, ensuring cross-machine reproducibility.
 
 ---
 
@@ -481,19 +481,19 @@ This vocabulary prevents the semantic mismatch where an engineer receives `APPRO
 
 All results in this paper are live and reproducible:
 
-**Interactive demo:** https://qomni.clanmarketer.com/crysl/
-**Benchmark dashboard:** https://qomni.clanmarketer.com/crysl/demo/benchmark.html
-**Source code:** https://github.com/condesi/crysl
+**Interactive demo:** https://qomni.clanmarketer.com/qomn/
+**Benchmark dashboard:** https://qomni.clanmarketer.com/qomn/demo/benchmark.html
+**Source code:** https://github.com/condesi/qomn
 
 **Reproduce the throughput benchmark:**
 ```bash
-curl https://qomni.clanmarketer.com/crysl/api/simulation/simd_density
+curl https://qomni.clanmarketer.com/qomn/api/simulation/simd_density
 ```
 
 **Reproduce the determinism test:**
 ```bash
 for i in {1..10}; do
-  curl -s -X POST https://qomni.clanmarketer.com/crysl/api/plan/execute \
+  curl -s -X POST https://qomni.clanmarketer.com/qomn/api/plan/execute \
     -H "Content-Type: application/json" \
     -d '{"plan":"plan_pump_sizing","params":{"Q_gpm":500,"P_psi":100,"eff":0.75}}' \
     | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['result']['nfpa20_pump_hp'])"
@@ -503,13 +503,13 @@ done
 
 **Reproduce the adversarial test:**
 ```bash
-curl https://qomni.clanmarketer.com/crysl/api/simulation/adversarial
+curl https://qomni.clanmarketer.com/qomn/api/simulation/adversarial
 ```
 
 **Run the full test suite locally:**
 ```bash
-git clone https://github.com/condesi/crysl
-cd crysl
+git clone https://github.com/condesi/qomn
+cd qomn
 cargo run --release -- serve ./stdlib/all_domains.crys 9001 &
 cargo test --test golden -- --nocapture
 cargo test --test repeatability -- --nocapture
@@ -526,16 +526,16 @@ cargo test --test all_56_plans -- --nocapture
 A civil engineering firm can replace spreadsheet-based calculations with Qomni API calls. A structural engineer queries "beam 50kN, 6m span, I=8000cm4" and receives a validated deflection with ACI 318 compliance status in under 10ms roundtrip (on local deployment).
 
 ### 10.2 Safety-Critical Embedded Systems
-CRYS-L oracles can be compiled to WebAssembly for deployment on embedded controllers. A fire suppression system can evaluate NFPA 20 compliance in 9µs without network dependency, enabling autonomous safety decisions.
+QOMN oracles can be compiled to WebAssembly for deployment on embedded controllers. A fire suppression system can evaluate NFPA 20 compliance in 9µs without network dependency, enabling autonomous safety decisions.
 
 ### 10.3 Cloud Computing Cost Reduction
-Google, AWS, and Azure spend billions on LLM inference for deterministic tasks (structured data extraction, arithmetic validation, compliance checking). Replacing LLM calls with CRYS-L oracles for deterministic subtasks reduces inference cost by 93.6 million× per operation.
+Google, AWS, and Azure spend billions on LLM inference for deterministic tasks (structured data extraction, arithmetic validation, compliance checking). Replacing LLM calls with QOMN oracles for deterministic subtasks reduces inference cost by 93.6 million× per operation.
 
 ### 10.4 Regulatory Compliance at Scale
-Peruvian tax authority (SUNAT) processes millions of IGV calculations daily. Each calculation is deterministic. CRYS-L can process these at 117M/s on a single server, replacing entire calculation fleets.
+Peruvian tax authority (SUNAT) processes millions of IGV calculations daily. Each calculation is deterministic. QOMN can process these at 117M/s on a single server, replacing entire calculation fleets.
 
 ### 10.5 Edge Computing & Robotics
-Google's autonomous systems, Meta's AR/VR physics, and Amazon's warehouse robots require sub-millisecond decision making without network dependency. CRYS-L's 9µs compute with WASM compilation enables deployment at the edge.
+Google's autonomous systems, Meta's AR/VR physics, and Amazon's warehouse robots require sub-millisecond decision making without network dependency. QOMN's 9µs compute with WASM compilation enables deployment at the edge.
 
 ---
 
@@ -566,18 +566,18 @@ Google's autonomous systems, Meta's AR/VR physics, and Amazon's warehouse robots
 
 ## 12. Related Work
 
-- **Wolfram Language** [Wolfram 1988]: Symbolic computation system. Different from CRYS-L in that it targets general mathematics, not domain-specific engineering with physical units and standards citations.
-- **Julia** [Bezanson et al. 2017]: JIT-compiled scientific computing. CRYS-L's approach is more restricted (no general programming) but achieves higher throughput via SIMD specialization.
-- **TensorFlow/JAX** [Abadi et al. 2016, Bradbury et al. 2018]: Deterministic computation graphs for ML. CRYS-L applies the same principle (compiled computation graph) to engineering domains.
-- **Lean4 / Coq**: Formal verification systems. Future work will express CRYS-L oracle correctness as Lean4 theorems.
-- **ANSYS / ETAP / SAP2000**: Domain-specific FEA/FEM tools. CRYS-L targets the 80% of engineering calculations that do not require finite element methods — those that reduce to closed-form expressions.
+- **Wolfram Language** [Wolfram 1988]: Symbolic computation system. Different from QOMN in that it targets general mathematics, not domain-specific engineering with physical units and standards citations.
+- **Julia** [Bezanson et al. 2017]: JIT-compiled scientific computing. QOMN's approach is more restricted (no general programming) but achieves higher throughput via SIMD specialization.
+- **TensorFlow/JAX** [Abadi et al. 2016, Bradbury et al. 2018]: Deterministic computation graphs for ML. QOMN applies the same principle (compiled computation graph) to engineering domains.
+- **Lean4 / Coq**: Formal verification systems. Future work will express QOMN oracle correctness as Lean4 theorems.
+- **ANSYS / ETAP / SAP2000**: Domain-specific FEA/FEM tools. QOMN targets the 80% of engineering calculations that do not require finite element methods — those that reduce to closed-form expressions.
 - **Neuro-symbolic AI** [Garcez & Lamb 2020]: The broader framework in which Qomni operates — neural components for NLU, symbolic components for computation.
 
 ---
 
 ## 13. Conclusion
 
-Qomni demonstrates that **the right architecture for engineering AI is not a better language model — it is a compiled symbolic engine with an intelligent routing layer**. By separating the concerns of natural language understanding (handled by the intent router) from deterministic computation (handled by CRYS-L oracles), Qomni achieves:
+Qomni demonstrates that **the right architecture for engineering AI is not a better language model — it is a compiled symbolic engine with an intelligent routing layer**. By separating the concerns of natural language understanding (handled by the intent router) from deterministic computation (handled by QOMN oracles), Qomni achieves:
 
 - **1.53 billion×** throughput advantage on deterministic tasks
 - **Zero** hallucination risk for engineering calculations
@@ -595,7 +595,7 @@ The key insight is architectural: LLMs are excellent at understanding intent; th
 | `/health` | GET | Server status, version, plan count |
 | `/plans` | GET | List all 56 plans with parameters |
 | `/plan/execute` | POST | Execute named plan, returns results + total_ns |
-| `/eval` | POST | Evaluate arbitrary CRYS-L expression |
+| `/eval` | POST | Evaluate arbitrary QOMN expression |
 | `/compile` | POST | Compile oracle to LLVM IR or WASM |
 | `/simulation/start` | POST | Start AVX2 sweep simulation |
 | `/simulation/status` | GET | Current simulation stats (scenarios/sec) |
@@ -639,5 +639,5 @@ The key insight is architectural: LLMs are excellent at understanding intent; th
 ---
 
 *© 2026 Percy Rojas Masgo · Qomni AI Lab · Condesi Perú*
-*License: Apache-2.0 — https://github.com/condesi/crysl*
+*License: Apache-2.0 — https://github.com/condesi/qomn*
 *Contact: percy.rojas@condesi.pe*
