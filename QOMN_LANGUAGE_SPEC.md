@@ -475,9 +475,9 @@ for step in plan.exec_steps {
                                     └──────────┘
 ```
 
-### 9.1 CRYS-ISA Bytecode
+### 9.1 QOMN-ISA Bytecode
 
-The intermediate bytecode (CRYS-ISA) uses a register-based instruction set:
+The intermediate bytecode (QOMN-ISA) uses a register-based instruction set:
 
 | Opcode | Description |
 |---|---|
@@ -493,12 +493,12 @@ The intermediate bytecode (CRYS-ISA) uses a register-based instruction set:
 | `ORACLE_CALL` | Invoke another oracle (async capable) |
 | `ORACLE_WAIT` | Wait for async oracle result |
 | `PAR_BEGIN/PAR_END` | Fork/join parallel execution |
-| `LOAD_CRYS` | Load crystal weights (L1Pin/Stream/Prefetch) |
+| `LOAD_QOMN` | Load crystal weights (L1Pin/Stream/Prefetch) |
 | `MM_TERN` | Ternary matrix multiplication (AVX2) |
 
 ### 9.2 Bytecode VM
 
-The Bytecode VM executes CRYS-ISA with:
+The Bytecode VM executes QOMN-ISA with:
 - **Async oracle engine**: Thread pool for concurrent oracle calls
 - **Crystal cache**: mmap lazy-loader for .crystal weight files
 - **Memory pool**: Slab allocator for zero-copy f32/i8 buffers
@@ -511,7 +511,7 @@ The Bytecode VM executes CRYS-ISA with:
 ### 10.1 Architecture
 
 ```
-CRYS-ISA Bytecode
+QOMN-ISA Bytecode
      │
      ▼
   Walk opcodes (entry_ip → Return/Halt)
@@ -925,7 +925,7 @@ At 1,400 ns per plan, the theoretical throughput is:
 |---|---|---|
 | `server.rs` | 6,956 | HTTP server, 34+ REST endpoints |
 | `intent_parser.rs` | 1,578 | NLP → plan routing |
-| `bytecode.rs` | 929 | CRYS-ISA bytecode compiler |
+| `bytecode.rs` | 929 | QOMN-ISA bytecode compiler |
 | `bytecode_vm.rs` | 925 | Bytecode interpreter |
 | `backend_cpu.rs` | 892 | AVX2 ternary GEMM |
 | `jit.rs` | 834 | Cranelift JIT engine |
@@ -953,19 +953,19 @@ At 1,400 ns per plan, the theoretical throughput is:
 
 ```
 qomn                              Interactive REPL
-qomn run <file.crys>              Execute (tree-walk VM)
-qomn run-jit <file.crys>          Execute with JIT oracle dispatch
-qomn check <file.crys>            Type-check only
-qomn lex <file.crys>              Dump tokens
-qomn hir <file.crys>              Dump High-Level IR graph
-qomn ir <file.crys>               Dump CRYS-ISA Bytecode
-qomn jit <file.crys>              Compile oracles → native x86-64
+qomn run <file.qomn>              Execute (tree-walk VM)
+qomn run-jit <file.qomn>          Execute with JIT oracle dispatch
+qomn check <file.qomn>            Type-check only
+qomn lex <file.qomn>              Dump tokens
+qomn hir <file.qomn>              Dump High-Level IR graph
+qomn ir <file.qomn>               Dump QOMN-ISA Bytecode
+qomn jit <file.qomn>              Compile oracles → native x86-64
 qomn bench [rows] [cols]          AVX2 MM_TERN benchmark
 qomn eval <expr>                  Evaluate inline expression
-qomn compile <file.crys> [dir]    Compile oracle → .crystal (RFF PaO)
-qomn serve <file.crys> [port]     Start HTTP API server
-qomn plan <file.crys> <plan> ...  Execute named plan
-qomn intent <file.crys> <query>   Parse intent and execute
+qomn compile <file.qomn> [dir]    Compile oracle → .crystal (RFF PaO)
+qomn serve <file.qomn> [port]     Start HTTP API server
+qomn plan <file.qomn> <plan> ...  Execute named plan
+qomn intent <file.qomn> <query>   Parse intent and execute
 ```
 
 ## Appendix B: Deployment
