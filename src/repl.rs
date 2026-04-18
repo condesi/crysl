@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v3.2 — REPL (Read-Eval-Print Loop)
+// QOMN v3.2 — REPL (Read-Eval-Print Loop)
 //
 // Dual-mode interactive shell:
 //   • Legacy mode:  oracle / crystal / pipe syntax (old AST)
@@ -11,11 +11,11 @@
 //   .bench <plan_name> [k=v ...]  benchmark a loaded plan_* plan (1000 iters)
 //   .explain <plan_name>          show formula sources, standards, params
 //   .load <file>                  load & execute legacy .crys file
-//   .load-plan <file>             load plan_* .crysl file into REPL
-//   .load-dir <dir>               load all .crysl files from directory
+//   .load-plan <file>             load plan_* .qomn file into REPL
+//   .load-dir <dir>               load all .qomn files from directory
 //   .plans                        list loaded plan_* plans
 //   .reload                       hot-reload last loaded plan file
-//   .check <file>                 type-check a .crysl file
+//   .check <file>                 type-check a .qomn file
 //   .history                      show command history
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -29,7 +29,7 @@ use crate::plan_v2;
 
 const BANNER: &str = r#"
   ╔══════════════════════════════════════════════════════╗
-  ║   CRYS-L v3.2  — Crystal Language REPL              ║
+  ║   QOMN v3.2  — Crystal Language REPL              ║
   ║   Qomni AI Lab · Condesi Perú · 2026                ║
   ║                                                     ║
   ║   plan_pump_sizing(Q_gpm=500, P_psi=100, eff=0.75) ║
@@ -38,7 +38,7 @@ const BANNER: &str = r#"
 "#;
 
 const HELP: &str = r#"
-CRYS-L v3.2 REPL — Commands:
+QOMN v3.2 REPL — Commands:
 
   .help                         this help
   .quit / .q / exit             exit
@@ -46,9 +46,9 @@ CRYS-L v3.2 REPL — Commands:
   .bench <plan> [k=v ...]       benchmark plan (1000 iterations)
   .explain <plan>               show formulas + standards for plan
   .load <file>                  load legacy .crys file (oracle syntax)
-  .load-plan <file>             load plan_* .crysl file into session
-  .reload                       reload last .crysl file
-  .check <file>                 type-check a .crysl file
+  .load-plan <file>             load plan_* .qomn file into session
+  .reload                       reload last .qomn file
+  .check <file>                 type-check a .qomn file
 
 Plan_* Syntax Quick Reference:
   plan_pump_sizing(Q_gpm: f64, P_psi: f64, eff: f64 = 0.70) {
@@ -264,7 +264,7 @@ pub fn run_repl(qomni_url: Option<String>, qomni_key: Option<String>) {
             if in_block {
                 write!(out, "  ... ").unwrap();
             } else {
-                write!(out, "crysl> ").unwrap();
+                write!(out, "qomn> ").unwrap();
             }
             out.flush().unwrap();
         }
@@ -323,7 +323,7 @@ pub fn run_repl(qomni_url: Option<String>, qomni_key: Option<String>) {
                             let mut paths: Vec<String> = entries
                                 .filter_map(|e| e.ok())
                                 .map(|e| e.path())
-                                .filter(|p| p.extension().map(|x| x == "crysl").unwrap_or(false))
+                                .filter(|p| p.extension().map(|x| x == "qomn").unwrap_or(false))
                                 .map(|p| p.to_string_lossy().into_owned())
                                 .collect();
                             paths.sort();
@@ -331,7 +331,7 @@ pub fn run_repl(qomni_url: Option<String>, qomni_key: Option<String>) {
                                 state.load_plan_file(path);
                                 loaded += 1;
                             }
-                            if loaded == 0 { println!("  (no .crysl files found in '{}')", dir); }
+                            if loaded == 0 { println!("  (no .qomn files found in '{}')", dir); }
                         }
                     }
                     continue;

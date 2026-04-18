@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v1.9 — Plan-Level SIMD Batch Kernels
+// QOMN v1.9 — Plan-Level SIMD Batch Kernels
 //
 // Unlike batch_oracle.rs (which vectorizes individual oracle functions),
 // this module vectorizes ACROSS complete PLAN SCENARIOS:

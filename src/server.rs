@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v2.1 — HTTP Server Mode
+// QOMN v2.1 — HTTP Server Mode
 // Percy Rojas M. · Qomni AI Lab · 2026
 //
 // Endpoints:
@@ -167,7 +167,7 @@ fn session_insert(session: ReactiveSession) {
     map.insert(id, session);
 }
 
-pub struct CrysServer {
+pub struct QomnServer {
     vm:      Arc<Mutex<Vm>>,
     prog:    Program,
     plans:   Arc<Vec<PlanDecl>>,
@@ -175,7 +175,7 @@ pub struct CrysServer {
     port:    u16,
 }
 
-impl CrysServer {
+impl QomnServer {
     pub fn new(vm: Vm, prog: Program, port: u16) -> Self {
         let plans: Vec<PlanDecl> = prog.decls.iter()
             .filter_map(|d| if let crate::ast::Decl::Plan(p) = d { Some(p.clone()) } else { None })
@@ -202,7 +202,7 @@ impl CrysServer {
         let listener = TcpListener::bind(&addr)
             .unwrap_or_else(|e| { eprintln!("Bind error: {}", e); std::process::exit(1) });
 
-        println!("  CRYS-L server listening on {}", addr);
+        println!("  QOMN server listening on {}", addr);
         // Store plans/jit for autonomous loop
         let _ = LIVE_PLANS.set(Arc::clone(&self.plans));
         let _ = LIVE_JIT.set(Arc::clone(&self.jit_map));
@@ -361,8 +361,8 @@ fn handle_conn(
     let response = format!(
         "HTTP/1.1 {}
 Content-Type: {}
-{}X-CRYS-Computed: live
-X-CRYS-Version: 3.2
+{}X-QOMN-Computed: live
+X-QOMN-Version: 3.2
 Access-Control-Allow-Origin: *
 Content-Length: {}
 
@@ -516,11 +516,11 @@ fn route_request(
             let has_fma  = is_x86_feature_detected!("fma");
             let has_avx2 = is_x86_feature_detected!("avx2");
             let no_fma   = NO_FMA_MODE.load(Ordering::Relaxed);
-            let fma_path = if no_fma { "VMULSD+VADDSD (CRYS_NO_FMA)" } else if has_fma { "VFMADD231SD" } else { "VMULSD+VADDSD" };
+            let fma_path = if no_fma { "VMULSD+VADDSD (QOMN_NO_FMA)" } else if has_fma { "VFMADD231SD" } else { "VMULSD+VADDSD" };
             // -0.0 canonicalization: active
             // DAZ/FTZ: checked at runtime (MXCSR bits 6,15)
             ("200 OK", format!(
-                r#"{{"status":"{}","lang":"CRYS-L","version":"3.2","plans":{},"jit":{},"turbo":{},"watchdog":"{}","cpu":{{"fma":{},"avx2":{},"fma_path":"{}","zero_canon":true,"daz_active":false,"nan_shield":"avx2+fma_branchless","rounding":"FE_TONEAREST","no_fma":{}}}}}"#,
+                r#"{{"status":"{}","lang":"QOMN","version":"3.2","plans":{},"jit":{},"turbo":{},"watchdog":"{}","cpu":{{"fma":{},"avx2":{},"fma_path":"{}","zero_canon":true,"daz_active":false,"nan_shield":"avx2+fma_branchless","rounding":"FE_TONEAREST","no_fma":{}}}}}"#,
                 if wstatus == "healthy" { "ok" } else { wstatus },
                 n_plans, has_jit, turbo_n, wstatus,
                 has_fma, has_avx2, fma_path, no_fma
@@ -1033,7 +1033,7 @@ fn route_request(
             let selector = extract_json_str(body, "selector");
 
             match ureq::get(&url)
-                .set("User-Agent", "CRYS-L/2.2 (Qomni AI Lab)")
+                .set("User-Agent", "QOMN/2.2 (Qomni AI Lab)")
                 .timeout(std::time::Duration::from_secs(10))
                 .call()
             {
@@ -1073,7 +1073,7 @@ fn route_request(
                 return ("403 Forbidden", r#"{"ok":false,"error":"Private URL"}"#.into());
             }
             match ureq::get(&url)
-                .set("User-Agent", "CRYS-L Security Scanner/2.2")
+                .set("User-Agent", "QOMN Security Scanner/2.2")
                 .timeout(std::time::Duration::from_secs(10))
                 .call()
             {
@@ -1113,7 +1113,7 @@ fn route_request(
 
             // Kill switch: QOMNI_PATCH_ENABLED must be "1"
             if env::var("QOMNI_PATCH_ENABLED").unwrap_or_default() != "1" {
-                return ("403 Forbidden", r#"{"ok":false,"error":"Patch engine disabled. Set QOMNI_PATCH_ENABLED=1 to enable.","hint":"systemctl edit crysl-nfpa --force"}"#.into());
+                return ("403 Forbidden", r#"{"ok":false,"error":"Patch engine disabled. Set QOMNI_PATCH_ENABLED=1 to enable.","hint":"systemctl edit qomn-nfpa --force"}"#.into());
             }
 
             let patch_id = extract_json_str(body, "id").unwrap_or_else(|| "patch".to_string());
@@ -3507,7 +3507,7 @@ fn route_request(
 
 
         // ══════════════════════════════════════════════════════════════
-        // CRYS-L Command Center — Recon / Fuzzer / Auth endpoints
+        // QOMN Command Center — Recon / Fuzzer / Auth endpoints
         // ══════════════════════════════════════════════════════════════
 
         // ── RECON: WAF Detection ──────────────────────────────────────
@@ -4796,13 +4796,13 @@ fn route_request(
         ("POST", "/agents/debate")     => agents_debate(body),
         // ── v2 Plan API ────────────────────────────────────────────
         ("GET", "/v2/plans") => {
-            match std::fs::read_dir("/opt/crysl/plans") {
+            match std::fs::read_dir("/opt/qomn/plans") {
                 Ok(entries) => {
                     let mut names: Vec<String> = entries
                         .filter_map(|e| e.ok())
                         .filter_map(|e| {
                             let n = e.file_name().to_string_lossy().into_owned();
-                            if n.ends_with(".crysl") { Some(n.trim_end_matches(".crysl").to_string()) } else { None }
+                            if n.ends_with(".qomn") { Some(n.trim_end_matches(".qomn").to_string()) } else { None }
                         })
                         .collect();
                     names.sort();
@@ -4819,7 +4819,7 @@ fn route_request(
             if plan_name.is_empty() {
                 return ("400 Bad Request", "{\"ok\":false,\"error\":\"missing plan field\"}".into());
             }
-            let fpath = format!("/opt/crysl/plans/{}.crysl", plan_name);
+            let fpath = format!("/opt/qomn/plans/{}.qomn", plan_name);
             match std::fs::read_to_string(&fpath) {
                 Err(_) => ("404 Not Found", format!("{{\"ok\":false,\"error\":\"plan not found: {}\"}}", plan_name)),
                 Ok(plan_src) => match parse_plans(&plan_src) {
@@ -4869,7 +4869,7 @@ fn route_request(
         }
 
 
-        // POST /compile — CRYS-L source → backend IR
+        // POST /compile — QOMN source → backend IR
         // body: {"src":"oracle ...", "backend":"llvm"} or {"src":"...", "target":"wasm"}
         ("POST", "/compile") => {
             let src_text = extract_json_str(body, "src").unwrap_or_else(|| body.to_string());
@@ -4893,7 +4893,7 @@ fn route_request(
             }
         }
 
-        // POST /linalg/compute — run CRYS-L program with linalg built-ins via VM
+        // POST /linalg/compute — run QOMN program with linalg built-ins via VM
         ("POST", "/linalg/compute") => {
             let src_text = extract_json_str(body, "src").unwrap_or_else(|| body.to_string());
             let tokens = Lexer::new(&src_text).tokenize();
@@ -5514,7 +5514,7 @@ fn decision_analyze(plan_name: &str, steps: &[(String, String, f64)], total_ns: 
 }
 
 fn decision_rules_json() -> String {
-    r#"{"ok":true,"engine":"CRYS-L Decision Engine v1.0","rules":[{"category":"hp_pump","thresholds":[{"range":"<5","status":"valid","note":"Small/fractional HP"},{"range":"5-50","status":"valid","note":"Standard, recommend +20% margin"},{"range":"50-200","status":"warning","note":"Needs VFD per NFPA 20 sec 4.14"},{"range":">200","status":"critical","note":"Parallel pumps required"}]},{"category":"pressure_psi","thresholds":[{"range":"<20","status":"critical","note":"Below NFPA minimum"},{"range":"20-50","status":"warning","note":"Low, verify remote sprinklers"},{"range":">50","status":"valid","note":"Adequate"}]},{"category":"shutoff_pressure","thresholds":[{"range":">140% rated","status":"warning","note":"Exceeds NFPA 20 limit"}]},{"category":"flow_gpm","thresholds":[{"range":">2500","status":"warning","note":"Loop piping needed"}]},{"category":"voltage_drop","thresholds":[{"range":">5V","status":"critical","note":"NEC violation"},{"range":">3V","status":"warning","note":"Approaching limit"}]},{"category":"cost","thresholds":[{"range":">200000","status":"critical","note":"Review scope"},{"range":">50000","status":"warning","note":"Significant cost"}]},{"category":"factor_of_safety","thresholds":[{"range":"<1.0","status":"critical","note":"Failure condition"},{"range":"<1.5","status":"warning","note":"Marginal"}]},{"category":"power_loss","thresholds":[{"range":">5%","status":"warning","note":"Efficiency concern"}]},{"category":"head_ft","thresholds":[{"range":">200","status":"warning","note":"Multi-stage pump may be needed"}]},{"category":"cvss_score","thresholds":[{"range":">9.0","status":"critical","note":"Patch within 24h"},{"range":">7.0","status":"warning","note":"Patch within 7 days"}]},{"category":"entropy","thresholds":[{"range":"<40","status":"critical","note":"Trivially crackable"},{"range":"<72","status":"warning","note":"Below NIST recommendation"}]},{"category":"slope","thresholds":[{"range":">30%","status":"critical","note":"Landslide risk"},{"range":">15%","status":"warning","note":"Stability analysis needed"}]}]}"#.to_string()
+    r#"{"ok":true,"engine":"QOMN Decision Engine v1.0","rules":[{"category":"hp_pump","thresholds":[{"range":"<5","status":"valid","note":"Small/fractional HP"},{"range":"5-50","status":"valid","note":"Standard, recommend +20% margin"},{"range":"50-200","status":"warning","note":"Needs VFD per NFPA 20 sec 4.14"},{"range":">200","status":"critical","note":"Parallel pumps required"}]},{"category":"pressure_psi","thresholds":[{"range":"<20","status":"critical","note":"Below NFPA minimum"},{"range":"20-50","status":"warning","note":"Low, verify remote sprinklers"},{"range":">50","status":"valid","note":"Adequate"}]},{"category":"shutoff_pressure","thresholds":[{"range":">140% rated","status":"warning","note":"Exceeds NFPA 20 limit"}]},{"category":"flow_gpm","thresholds":[{"range":">2500","status":"warning","note":"Loop piping needed"}]},{"category":"voltage_drop","thresholds":[{"range":">5V","status":"critical","note":"NEC violation"},{"range":">3V","status":"warning","note":"Approaching limit"}]},{"category":"cost","thresholds":[{"range":">200000","status":"critical","note":"Review scope"},{"range":">50000","status":"warning","note":"Significant cost"}]},{"category":"factor_of_safety","thresholds":[{"range":"<1.0","status":"critical","note":"Failure condition"},{"range":"<1.5","status":"warning","note":"Marginal"}]},{"category":"power_loss","thresholds":[{"range":">5%","status":"warning","note":"Efficiency concern"}]},{"category":"head_ft","thresholds":[{"range":">200","status":"warning","note":"Multi-stage pump may be needed"}]},{"category":"cvss_score","thresholds":[{"range":">9.0","status":"critical","note":"Patch within 24h"},{"range":">7.0","status":"warning","note":"Patch within 7 days"}]},{"category":"entropy","thresholds":[{"range":"<40","status":"critical","note":"Trivially crackable"},{"range":"<72","status":"warning","note":"Below NIST recommendation"}]},{"category":"slope","thresholds":[{"range":">30%","status":"critical","note":"Landslide risk"},{"range":">15%","status":"warning","note":"Stability analysis needed"}]}]}"#.to_string()
 }
 
 
@@ -5524,7 +5524,7 @@ fn decision_rules_json() -> String {
 
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
-/// CRYS_NO_FMA=1 → force VMULSD+VADDSD (SSE2) for cross-arch hash portability
+/// QOMN_NO_FMA=1 → force VMULSD+VADDSD (SSE2) for cross-arch hash portability
 static NO_FMA_MODE: AtomicBool = AtomicBool::new(false);
 
 static REQ_COUNT:     AtomicU64 = AtomicU64::new(0);
@@ -5586,11 +5586,11 @@ pub fn watchdog_assess() -> (&'static str, String) {
 }
 
 fn save_health_log(status: &str, json: &str) {
-    let _ = std::fs::create_dir_all("/opt/crysl/memory");
+    let _ = std::fs::create_dir_all("/opt/qomn/memory");
     use std::io::Write;
     if let Ok(mut f) = std::fs::OpenOptions::new()
         .create(true).append(true)
-        .open("/opt/crysl/memory/health_log.ndjson")
+        .open("/opt/qomn/memory/health_log.ndjson")
     {
         let ts = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -6642,7 +6642,7 @@ fn resolve_proactive_param(
 }
 
 // ── Graph Memory ──────────────────────────────────────────────────────
-static GRAPH_MEMORY_PATH: &str = "/opt/crysl/memory/graph_log.ndjson";
+static GRAPH_MEMORY_PATH: &str = "/opt/qomn/memory/graph_log.ndjson";
 
 // -- Digital Twin State Engine v4 ----------------------------------------
 
@@ -7813,7 +7813,7 @@ fn dkp_publish(body: &str) -> String {
     )
 }
 
-const DKP_STORE_PATH: &str = "/opt/crysl/data/dkp_store.ndjson";
+const DKP_STORE_PATH: &str = "/opt/qomn/data/dkp_store.ndjson";
 
 /// Lookup a numeric threshold from DKP, fallback to default.
 fn dkp_threshold(domain: &str, key: &str, default: f64) -> f64 {
@@ -7834,7 +7834,7 @@ fn save_dkp_store() {
             f.authority_level, f.mode
         )
     }).collect();
-    let _ = std::fs::create_dir_all("/opt/crysl/data");
+    let _ = std::fs::create_dir_all("/opt/qomn/data");
     let _ = std::fs::write(DKP_STORE_PATH, lines.join("\n"));
 }
 fn load_dkp_store() {
@@ -8307,7 +8307,7 @@ fn nvd_poll_manual() -> String {
         // Use curl with timeout (5s connect, 15s max)
         let output = std::process::Command::new("curl")
             .args(&["-s", "--connect-timeout", "5", "--max-time", "15",
-                    "-H", "User-Agent: CRYS-L/7.3 OT-Guardian",
+                    "-H", "User-Agent: QOMN/7.3 OT-Guardian",
                     "-H", "Accept: application/json",
                     url])
             .output();
@@ -8359,7 +8359,7 @@ fn dkp_crawl(body: &str) -> String {
         return r#"{"ok":false,"error":"invalid characters in source"}"#.into();
     }
 
-    let crawler = "/opt/crysl/dkp_crawler.py";
+    let crawler = "/opt/qomn/dkp_crawler.py";
     let mut cmd = std::process::Command::new("python3");
     cmd.arg(crawler).arg(source_arg).arg(&source_val);
     if domain != "auto" { cmd.arg("--domain").arg(&domain); }
@@ -8438,9 +8438,9 @@ fn p2p_sign(payload: &str, secret: &str, ts: u64) -> u64 {
 }
 
 fn p2p_secret() -> String {
-    std::env::var("CRYSL_P2P_SECRET")
+    std::env::var("QOMN_P2P_SECRET")
         .or_else(|_| std::env::var("QOMNI_MESH_SECRET"))
-        .unwrap_or_else(|_| "crysl-default-p2p-secret-2026".to_string())
+        .unwrap_or_else(|_| "qomn-default-p2p-secret-2026".to_string())
 }
 
 /// GET /dkp/export — export all facts as signed bundle
@@ -8594,7 +8594,7 @@ fn twin_sse_response(since_ts: u64) -> (Vec<u8>, bool) {
 
 
 // -- Registry Auto-Sync v8.3 ------------------------------------------------
-// Background thread: sync new facts from CRYSL-REGISTRY (port 9002) every 60s
+// Background thread: sync new facts from QOMN-REGISTRY (port 9002) every 60s
 
 const REGISTRY_SYNC_INTERVAL: u64 = 60;
 const REGISTRY_URL: &str = "http://127.0.0.1:9002";
@@ -8710,7 +8710,7 @@ fn spawn_registry_syncer() {
 
 
 fn ensure_memory_dir() {
-    let _ = std::fs::create_dir_all("/opt/crysl/memory");
+    let _ = std::fs::create_dir_all("/opt/qomn/memory");
     load_dkp_store();
 }
 
@@ -9596,17 +9596,17 @@ fn audit_write(plan: &str, mode: &str, risk: f64, confidence: f64, params_hash: 
         r#"{{"ts":{},"plan":"{}","mode":"{}","risk":{:.3},"confidence":{:.3},"params_hash":"{:016x}"}}"#,
         ts, plan, mode, risk, confidence, params_hash
     );
-    let _ = std::fs::create_dir_all("/opt/crysl/data");
+    let _ = std::fs::create_dir_all("/opt/qomn/data");
     if let Ok(mut f) = std::fs::OpenOptions::new()
         .create(true).append(true)
-        .open("/opt/crysl/data/audit.jsonl") {
+        .open("/opt/qomn/data/audit.jsonl") {
         let _ = writeln!(f, "{}", entry);
     }
 }
 
 fn audit_read_recent(n: usize) -> String {
     use std::io::{BufRead, BufReader};
-    let file = match std::fs::File::open("/opt/crysl/data/audit.jsonl") {
+    let file = match std::fs::File::open("/opt/qomn/data/audit.jsonl") {
         Ok(f) => f,
         Err(_) => return "[]".into(),
     };
@@ -9858,7 +9858,7 @@ fn cluster_health_json() -> (&'static str, String) {
         .unwrap_or_default().as_secs();
 
     // Count audit entries for activity metric
-    let audit_count = std::fs::read_to_string("/opt/crysl/data/audit.jsonl")
+    let audit_count = std::fs::read_to_string("/opt/qomn/data/audit.jsonl")
         .map(|s| s.lines().count())
         .unwrap_or(0);
 
@@ -9871,7 +9871,7 @@ fn cluster_health_json() -> (&'static str, String) {
     };
 
     ("200 OK", format!(
-        r#"{{"ok":true,"cluster":{{"nodes":[{{"id":"server5","role":"primary","status":"healthy","compute":"CRYS-L v3.1","features":207,"ts":{}}}],"consensus":"single-node","policy_version":"v1.0"}},"twin_confidence":{:.3},"twin":{},"audit":{{"total_decisions":{}}},"slo":{{"compute_target_ns":1000,"simulate_target_ms":1,"concurrent_error_rate":0.0}}}}"#,
+        r#"{{"ok":true,"cluster":{{"nodes":[{{"id":"server5","role":"primary","status":"healthy","compute":"QOMN v3.1","features":207,"ts":{}}}],"consensus":"single-node","policy_version":"v1.0"}},"twin_confidence":{:.3},"twin":{},"audit":{{"total_decisions":{}}},"slo":{{"compute_target_ns":1000,"simulate_target_ms":1,"concurrent_error_rate":0.0}}}}"#,
         ts, twin_conf, twin, audit_count
     ))
 }
@@ -9930,9 +9930,9 @@ fn health_detailed_json() -> (&'static str, String) {
     let error_ok    = err_rate < 0.01; // <1% errors
     let live_active = LIVE_ACTIVE.load(std::sync::atomic::Ordering::Relaxed);
 
-    let audit_count = std::fs::read_to_string("/opt/crysl/data/audit.jsonl")
+    let audit_count = std::fs::read_to_string("/opt/qomn/data/audit.jsonl")
         .map(|s| s.lines().count()).unwrap_or(0);
-    let live_actions = std::fs::read_to_string("/opt/crysl/data/live_actions.jsonl")
+    let live_actions = std::fs::read_to_string("/opt/qomn/data/live_actions.jsonl")
         .map(|s| s.lines().count()).unwrap_or(0);
 
     ("200 OK", format!(
@@ -9968,10 +9968,10 @@ fn write_alert(alerts: &[String]) {
         .unwrap_or_default().as_secs();
     let msgs: Vec<String> = alerts.iter().map(|a| format!("\"{}\"", a.replace('"', "'"))).collect();
     let entry = format!(r#"{{"ts":{},"type":"slo_alert","alerts":[{}]}}"#, ts, msgs.join(","));
-    let _ = std::fs::create_dir_all("/opt/crysl/data");
+    let _ = std::fs::create_dir_all("/opt/qomn/data");
     if let Ok(mut f) = std::fs::OpenOptions::new()
         .create(true).append(true)
-        .open("/opt/crysl/data/alerts.jsonl") {
+        .open("/opt/qomn/data/alerts.jsonl") {
         let _ = writeln!(f, "{}", entry);
     }
 }
@@ -10027,7 +10027,7 @@ fn learn_stats_json() -> (&'static str, String) {
     use std::io::{BufRead, BufReader};
     use std::collections::HashMap;
 
-    let file = match std::fs::File::open("/opt/crysl/data/audit.jsonl") {
+    let file = match std::fs::File::open("/opt/qomn/data/audit.jsonl") {
         Ok(f) => f,
         Err(_) => return ("200 OK", r#"{"ok":true,"stats":[],"total":0,"message":"no audit data yet"}"#.into()),
     };
@@ -10077,7 +10077,7 @@ fn learn_stats_json() -> (&'static str, String) {
     let mode_stats: Vec<String> = mode_counts.iter()
         .map(|(m, c)| format!(r#"{{\"mode\":\"{}\",\"count\":{}}}"#, m, c)).collect();
 
-    let live_actions = std::fs::read_to_string("/opt/crysl/data/live_actions.jsonl")
+    let live_actions = std::fs::read_to_string("/opt/qomn/data/live_actions.jsonl")
         .map(|s| s.lines().count()).unwrap_or(0);
 
     ("200 OK", format!(
@@ -10107,7 +10107,7 @@ fn live_status_json() -> (&'static str, String) {
     let active = LIVE_ACTIVE.load(std::sync::atomic::Ordering::Relaxed);
     let actions = LIVE_ACTION_COUNT.load(std::sync::atomic::Ordering::Relaxed);
     let last = live_last_action();
-    let live_actions_count = std::fs::read_to_string("/opt/crysl/data/live_actions.jsonl")
+    let live_actions_count = std::fs::read_to_string("/opt/qomn/data/live_actions.jsonl")
         .map(|s| s.lines().count()).unwrap_or(0);
     ("200 OK", format!(
         r#"{{"ok":true,"active":{},"action_count":{},"live_log_entries":{},"last_action":{}}}"#,
@@ -10188,10 +10188,10 @@ fn spawn_autonomous_loop(
 
                     // ── VERIFY / LOG ──────────────────────────────────────────
                     use std::io::Write;
-                    let _ = std::fs::create_dir_all("/opt/crysl/data");
+                    let _ = std::fs::create_dir_all("/opt/qomn/data");
                     if let Ok(mut f) = std::fs::OpenOptions::new()
                         .create(true).append(true)
-                        .open("/opt/crysl/data/live_actions.jsonl") {
+                        .open("/opt/qomn/data/live_actions.jsonl") {
                         let _ = writeln!(f, "{}", action_entry);
                     }
 

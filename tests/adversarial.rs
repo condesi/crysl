@@ -1,6 +1,6 @@
-//! CRYS-L Adversarial & NaN-Shield Tests
+//! QOMN Adversarial & NaN-Shield Tests
 //!
-//! Validates that CRYS-L handles all adversarial, edge-case, and malformed
+//! Validates that QOMN handles all adversarial, edge-case, and malformed
 //! inputs without panicking, producing undefined behavior, or silently emitting
 //! wrong results. This is "Proof 3" from the paper: NaN-Shield.
 //!

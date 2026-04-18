@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v0.5 — Tree-walking VM (Interpreter)
-// Executes CRYS-L programs directly from the AST.
+// QOMN v0.5 — Tree-walking VM (Interpreter)
+// Executes QOMN programs directly from the AST.
 // Connects to Qomni crystal kernel via HTTP API.
 // ═══════════════════════════════════════════════════════════════════════
 

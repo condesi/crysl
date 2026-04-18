@@ -1,4 +1,4 @@
-//! CRYS-L Simulation Engine v2.3 — Production-Grade Autonomous Loop
+//! QOMN Simulation Engine v2.3 — Production-Grade Autonomous Loop
 //!
 //! 5 architectural upgrades from v2.2:
 //!   1. L1 Block Tiling (256 scenarios/block — fits 26KB in 32KB L1d)

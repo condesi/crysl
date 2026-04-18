@@ -1,15 +1,15 @@
 //! Cognitive Memory — persists execution experiences across sessions.
 //!
 //! After each successful plan or loop execution, call `save_experience()`.
-//! Records are stored as append-only JSON lines in /opt/crysl/data/experiences.jsonl.
+//! Records are stored as append-only JSON lines in /opt/qomn/data/experiences.jsonl.
 //! Use `load_recent(n)` to retrieve the last n experiences for recall/context.
 
 use std::fs::{create_dir_all, OpenOptions};
 use std::io::Write;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const MEMORY_DIR:  &str = "/opt/crysl/data";
-const MEMORY_FILE: &str = "/opt/crysl/data/experiences.jsonl";
+const MEMORY_DIR:  &str = "/opt/qomn/data";
+const MEMORY_FILE: &str = "/opt/qomn/data/experiences.jsonl";
 const MAX_QUERY_LEN: usize = 150;
 
 /// A single saved execution experience.

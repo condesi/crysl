@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v2.0 — Intent Parser Interface
+// QOMN v2.0 — Intent Parser Interface
 // Percy Rojas M. · Qomni AI Lab · 2026
 //
 // Converts natural language queries into IntentAST structs.
@@ -107,7 +107,7 @@ pub trait LlmBackend: Send + Sync {
 /// The system prompt instructs the LLM to extract a structured IntentAST
 /// from a natural language query in any engineering domain.
 pub const SYSTEM_PROMPT: &str = r#"
-You are the CRYS-L Intent Parser for Qomni Engine.
+You are the QOMN Intent Parser for Qomni Engine.
 Given a natural language engineering query, extract a structured JSON IntentAST.
 
 Rules:

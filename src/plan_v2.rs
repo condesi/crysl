@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L plan_v2.rs — SPEC.md plan_* Parser, Formatter, JIT Compiler
+// QOMN plan_v2.rs — SPEC.md plan_* Parser, Formatter, JIT Compiler
 // v2.4: Core module for plan_* syntax as documented in SPEC.md v2.3
 //
 // Syntax supported:
@@ -741,7 +741,7 @@ impl PV2Parser {
 
 // ── Public parse function ─────────────────────────────────────────────
 
-/// Parse all plan_* declarations from a CRYS-L v2.3 source file.
+/// Parse all plan_* declarations from a QOMN v2.3 source file.
 /// Non-plan_* top-level items (comments, blank lines) are ignored.
 pub fn parse_plans(src: &str) -> Result<Vec<PlanV2Decl>, Vec<PV2Error>> {
     let chars: Vec<char> = src.chars().collect();
@@ -771,7 +771,7 @@ pub fn parse_plans(src: &str) -> Result<Vec<PlanV2Decl>, Vec<PV2Error>> {
 
 // ── Formatter (fmt command) ───────────────────────────────────────────
 
-/// Pretty-print a plan_* declaration back to canonical CRYS-L source.
+/// Pretty-print a plan_* declaration back to canonical QOMN source.
 pub fn fmt_plan(plan: &PlanV2Decl) -> String {
     let mut out = String::new();
     // Signature

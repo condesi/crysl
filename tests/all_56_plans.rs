@@ -1,6 +1,6 @@
-//! CRYS-L Smoke Tests — All 56 Plans
+//! QOMN Smoke Tests — All 56 Plans
 //!
-//! Every plan in CRYS-L v3.2 is tested with representative inputs.
+//! Every plan in QOMN v3.2 is tested with representative inputs.
 //! Tests verify that: (1) server responds without panic, (2) ok:true,
 //! (3) key result values are numeric and non-NaN.
 //!
@@ -14,7 +14,7 @@ use std::net::TcpStream;
 // ── HTTP helpers ─────────────────────────────────────────────────────────────
 
 fn post(path: &str, body: &str) -> String {
-    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("CRYS-L server not running");
+    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("QOMN server not running");
     let req = format!(
         "POST {} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
         path, body.len(), body

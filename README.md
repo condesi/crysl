@@ -1,4 +1,4 @@
-# CRYS-L — Deterministic Compute Engine for Critical Systems
+# QOMN — Deterministic Compute Engine for Critical Systems
 
 > **Global Integrity Hash — 10,000 scenarios, Q_gpm=100..599, P_psi=100, eff=0.75**
 > ```
@@ -81,8 +81,8 @@ curl https://desarrollador.xyz/plans
 Every response carries non-cacheable identity headers:
 ```
 Cache-Control: no-store, no-cache, must-revalidate
-X-CRYS-Computed: live
-X-CRYS-Version: 3.2
+X-QOMN-Computed: live
+X-QOMN-Version: 3.2
 ```
 
 **Live dashboard:** https://desarrollador.xyz
@@ -159,7 +159,7 @@ curl -X POST https://desarrollador.xyz/api/plan/execute \
 | 14 | Unaligned memory access | `VMOVDQU` — <1 cycle penalty, safe on all architectures |
 | 15 | Energy efficiency | `3.4M evals/joule` · 1B scenarios = 296 joules |
 | 16 | 1,000-node network, variance | `Variance = 0.0` — exact, not approximate |
-| 17 | Numerical drift, 1B steps | `7.64e-13` relative — CRYS-L uses multiply, not accumulate |
+| 17 | Numerical drift, 1B steps | `7.64e-13` relative — QOMN uses multiply, not accumulate |
 | 18 | Packet loss resilience | `50/50 OK` — TCP-level recovery, engine unaffected |
 | 19 | 50 reentrant threads | `50/50 valid` — zero cross-contamination between threads |
 | 20 | **Global SHA-256 (10K)** | **`2a59c51d551897a910e12d6d8fbaa14fe5bd91a5df87f92b1adee67b0f18f40c`** |
@@ -178,7 +178,7 @@ float nfpa20_pump_hp(float flow, float head, float eff) {
 }
 ```
 
-CRYS-L compiles physics to branchless AVX2 with physics guards at the API boundary:
+QOMN compiles physics to branchless AVX2 with physics guards at the API boundary:
 
 ```
 oracle nfpa20_pump_hp(Q: float, P: float, eff: float) -> float:
@@ -200,7 +200,7 @@ plan plan_pump_sizing(Q_gpm: float, P_psi: float, eff: float = 0.70):
 
 | System | Scenarios/s | Jitter σ | Determinism | Cost/month |
 |---|---|---|---|---|
-| **CRYS-L v3.2 AVX2** | **118M+** | **157K ns** | **IEEE-754 exact** | **$80** |
+| **QOMN v3.2 AVX2** | **118M+** | **157K ns** | **IEEE-754 exact** | **$80** |
 | C++ GCC -O3 | ~5M | ~850,000 ns | risk: UB on NaN path | same HW |
 | Python/NumPy | ~200K | >1ms | risk: version drift | same HW |
 
@@ -226,7 +226,7 @@ Telecom           — Link budget, dB margin, path loss
 ## Architecture
 
 ```
-CRYS-L DSL (.crysl / all_domains.crys)
+QOMN DSL (.qomn / all_domains.crys)
   ↓ Cranelift JIT + AVX2 AOT compilation at startup (~10ms, one-time)
 Physics guards (API boundary) — invalid inputs rejected before JIT
 Branchless oracle execution — VMULSD/VDIVSD, no branches in hot path
@@ -263,15 +263,15 @@ Demo tier: rate-limited. Production access: percy.rojas@condesi.pe
 curl https://desarrollador.xyz/health
 # "fma_path":"VFMADD231SD","no_fma":false
 
-# CRYS_NO_FMA=1: force VMULSD+VADDSD — identical hash on any CPU (ARM, AVX-512, no-FMA)
-CRYS_NO_FMA=1 crysl serve stdlib/all_domains.crys 9001
+# QOMN_NO_FMA=1: force VMULSD+VADDSD — identical hash on any CPU (ARM, AVX-512, no-FMA)
+QOMN_NO_FMA=1 qomn serve stdlib/all_domains.crys 9001
 curl http://127.0.0.1:9001/health
-# "fma_path":"VMULSD+VADDSD (CRYS_NO_FMA)","no_fma":true
+# "fma_path":"VMULSD+VADDSD (QOMN_NO_FMA)","no_fma":true
 ```
 
 **Why this matters:** `VFMADD231SD` (FMA) rounds once — `VMULSD + VADDSD` rounds twice.
 For physics formulas like `Q * P / (3960 * eff)`, the results are identical (no fused mul-add pattern).
-For future oracles using explicit FMA, `CRYS_NO_FMA=1` guarantees the same SHA-256 hash across
+For future oracles using explicit FMA, `QOMN_NO_FMA=1` guarantees the same SHA-256 hash across
 ARM servers, AMD EPYC, Intel Xeon, and any AVX-512 deployment.
 
 ---
@@ -287,7 +287,7 @@ Engineering certifications require results that are **provably identical** acros
 - **CVSS 3.1** (cybersecurity): risk scores must be consistent
 
 An LLM hallucinates. C++ with `-ffast-math` drifts. Python floats version-shift.
-CRYS-L does not. The hash above is the proof.
+QOMN does not. The hash above is the proof.
 
 ---
 
@@ -295,4 +295,4 @@ CRYS-L does not. The hash above is the proof.
 
 Percy Rojas Masgo — Condesi Perú / Qomni AI Lab
 percy.rojas@condesi.pe
-https://desarrollador.xyz · https://github.com/condesi/crysl
+https://desarrollador.xyz · https://github.com/condesi/qomn

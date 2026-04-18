@@ -1,6 +1,6 @@
-//! CRYS-L Repeatability & Determinism Tests
+//! QOMN Repeatability & Determinism Tests
 //!
-//! Validates the core CRYS-L guarantee: **same input → same output, always**.
+//! Validates the core QOMN guarantee: **same input → same output, always**.
 //! These tests are the empirical basis for the determinism claims in the paper.
 //!
 //! Run with: `cargo test --test repeatability -- --nocapture`
@@ -15,7 +15,7 @@ use std::time::Instant;
 // ── HTTP helpers ─────────────────────────────────────────────────────────────
 
 fn post(path: &str, body: &str) -> String {
-    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("CRYS-L server not running");
+    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("QOMN server not running");
     let req = format!(
         "POST {} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
         path, body.len(), body
