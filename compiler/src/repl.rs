@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v1.0 — REPL (Read-Eval-Print Loop)
-// Interactive shell for CRYS-L programs.
+// QOMN v1.0 — REPL (Read-Eval-Print Loop)
+// Interactive shell for QOMN programs.
 // ═══════════════════════════════════════════════════════════════════════
 
 use std::io::{self, BufRead, Write};
@@ -11,7 +11,7 @@ use crate::vm::{Vm, QomniConfig};
 
 const BANNER: &str = r#"
   ╔═══════════════════════════════════════════════════╗
-  ║   CRYS-L v1.0  — Crystal Language REPL           ║
+  ║   QOMN v1.0  — Crystal Language REPL           ║
   ║   Qomni AI Lab · Condesi Perú · 2026             ║
   ║                                                   ║
   ║   Tipos: trit  tvec[n]  tmat[r][c]               ║
@@ -20,7 +20,7 @@ const BANNER: &str = r#"
 "#;
 
 const HELP: &str = r#"
-CRYS-L REPL Commands:
+QOMN REPL Commands:
   :help              this help
   :quit / :q         exit
   :crystals          list registered crystals
@@ -28,7 +28,7 @@ CRYS-L REPL Commands:
   :load <file>       load and execute a .crys file
   :query <text>      route text through crystal router
 
-CRYS-L Syntax Quick Reference:
+QOMN Syntax Quick Reference:
   oracle f(x: f32) -> f32:      define physics oracle
       return x * 0.18
 

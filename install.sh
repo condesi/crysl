@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # =============================================================================
-# CRYS-L v3.2 -- Installation Script
+# QOMN v3.2 -- Installation Script
 # Tested on: Ubuntu 24.04 LTS (AMD64, AVX2 required)
-# Source:    https://github.com/condesi/crysl
+# Source:    https://github.com/condesi/qomn
 # Author:    Percy Rojas Masgo <percy.rojas@condesi.pe>
 # License:   Apache-2.0
 # =============================================================================
 set -e
 
-INSTALL_DIR="/opt/crysl"
-BINARY="/usr/local/bin/crysl"
-SERVICE="crysl-nfpa"
+INSTALL_DIR="/opt/qomn"
+BINARY="/usr/local/bin/qomn"
+SERVICE="qomn-nfpa"
 PORT="9001"
 DOMAIN=""          # optional: your domain for nginx SSL (leave empty to skip)
-NGINX_PATH=""      # optional: URL path prefix, e.g. /crysl  (leave empty for /)
+NGINX_PATH=""      # optional: URL path prefix, e.g. /qomn  (leave empty for /)
 
 # ─── colors ───────────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; NC='\033[0m'
@@ -22,8 +22,8 @@ info() { echo -e "${CYAN}[--]${NC} $*"; }
 fail() { echo -e "${RED}[!!]${NC} $*"; exit 1; }
 
 echo "================================================================="
-echo " CRYS-L Installer"
-echo " https://github.com/condesi/crysl"
+echo " QOMN Installer"
+echo " https://github.com/condesi/qomn"
 echo "================================================================="
 
 # ─── 1. system check ──────────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ info "Checking system requirements..."
 if grep -q avx2 /proc/cpuinfo; then
     ok "AVX2 supported"
 else
-    fail "AVX2 not found in /proc/cpuinfo. CRYS-L requires AVX2 (Intel Haswell+ / AMD Ryzen+)"
+    fail "AVX2 not found in /proc/cpuinfo. QOMN requires AVX2 (Intel Haswell+ / AMD Ryzen+)"
 fi
 
 # minimum RAM: 2GB
@@ -79,19 +79,19 @@ if [[ -d "$INSTALL_DIR/.git" ]]; then
     git -C "$INSTALL_DIR" pull --ff-only
     ok "Repo updated"
 else
-    info "Cloning https://github.com/condesi/crysl → $INSTALL_DIR ..."
-    git clone https://github.com/condesi/crysl "$INSTALL_DIR"
+    info "Cloning https://github.com/condesi/qomn → $INSTALL_DIR ..."
+    git clone https://github.com/condesi/qomn "$INSTALL_DIR"
     ok "Repo cloned"
 fi
 
 # ─── 5. build ─────────────────────────────────────────────────────────────────
-info "Building CRYS-L (release mode, AVX2 target)..."
+info "Building QOMN (release mode, AVX2 target)..."
 cd "$INSTALL_DIR"
 RUSTFLAGS="-C target-cpu=native" $CARGO build --release 2>&1 | tail -5
 ok "Build complete"
 
 # ─── 6. install binary ────────────────────────────────────────────────────────
-cp -f "$INSTALL_DIR/target/release/crysl" "$BINARY"
+cp -f "$INSTALL_DIR/target/release/qomn" "$BINARY"
 chmod +x "$BINARY"
 ok "Binary installed: $BINARY"
 $BINARY --version 2>/dev/null || info "(--version not implemented, binary is present)"
@@ -107,7 +107,7 @@ ok "Stdlib found: $STDLIB"
 info "Creating systemd service: $SERVICE ..."
 cat > "/etc/systemd/system/${SERVICE}.service" <<EOF
 [Unit]
-Description=CRYS-L Plan Engine (Port $PORT)
+Description=QOMN Plan Engine (Port $PORT)
 After=network.target
 
 [Service]
@@ -139,11 +139,11 @@ fi
 # ─── 9. nginx config (optional) ───────────────────────────────────────────────
 if [[ -n "$DOMAIN" ]]; then
     info "Configuring nginx for $DOMAIN ..."
-    PREFIX="${NGINX_PATH:-/crysl}"
+    PREFIX="${NGINX_PATH:-/qomn}"
     # strip trailing slash
     PREFIX="${PREFIX%/}"
 
-    NGINX_CONF="/etc/nginx/sites-available/crysl"
+    NGINX_CONF="/etc/nginx/sites-available/qomn"
     cat > "$NGINX_CONF" <<EOF
 server {
     listen 80;
@@ -167,7 +167,7 @@ server {
 }
 EOF
 
-    ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/crysl
+    ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/qomn
     nginx -t && systemctl reload nginx
     ok "Nginx configured for $DOMAIN${PREFIX}/api/"
 
@@ -178,7 +178,7 @@ fi
 
 # ─── 10. firewall: open port if ufw active ────────────────────────────────────
 if command -v ufw &>/dev/null && ufw status | grep -q "Status: active"; then
-    ufw allow "$PORT/tcp" comment "CRYS-L API" &>/dev/null
+    ufw allow "$PORT/tcp" comment "QOMN API" &>/dev/null
     ok "UFW: port $PORT opened"
 fi
 
@@ -214,15 +214,15 @@ fi
 
 echo ""
 echo "================================================================="
-echo " CRYS-L INSTALLED SUCCESSFULLY"
+echo " QOMN INSTALLED SUCCESSFULLY"
 echo "================================================================="
 echo ""
 echo "  API (local):   http://127.0.0.1:$PORT"
-[[ -n "$DOMAIN" ]] && echo "  API (public):  https://$DOMAIN${NGINX_PATH:-/crysl}/api/"
+[[ -n "$DOMAIN" ]] && echo "  API (public):  https://$DOMAIN${NGINX_PATH:-/qomn}/api/"
 echo "  Service:       systemctl status $SERVICE"
 echo "  Logs:          journalctl -u $SERVICE -f"
 echo "  Stdlib:        $STDLIB"
-echo "  Source:        https://github.com/condesi/crysl"
+echo "  Source:        https://github.com/condesi/qomn"
 echo ""
 echo "  Quick verification:"
 echo "    curl http://127.0.0.1:$PORT/simulation/status"

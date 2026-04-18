@@ -1,4 +1,4 @@
-//! CRYS-L Golden Tests — verify exact outputs for known inputs.
+//! QOMN Golden Tests — verify exact outputs for known inputs.
 //! Run with: cargo test --test golden
 
 /// Helper: POST JSON to localhost:9001 and return response body
@@ -6,7 +6,7 @@ fn post(path: &str, body: &str) -> String {
     use std::io::{Read, Write};
     use std::net::TcpStream;
 
-    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("connect to CRYS-L server");
+    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("connect to QOMN server");
     let req = format!(
         "POST {} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
         path, body.len(), body
@@ -26,7 +26,7 @@ fn get(path: &str) -> String {
     use std::io::{Read, Write};
     use std::net::TcpStream;
 
-    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("connect to CRYS-L server");
+    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("connect to QOMN server");
     let req = format!(
         "GET {} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n",
         path

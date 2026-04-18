@@ -1,4 +1,4 @@
-//! CRYS-L SLO & Latency Distribution Tests
+//! QOMN SLO & Latency Distribution Tests
 //!
 //! Measures p50/p95/p99 compute latency and verifies they are within
 //! the SLO targets stated in the paper. Also validates that roundtrip
@@ -16,7 +16,7 @@ use std::time::Instant;
 
 fn post_timed(path: &str, body: &str) -> (String, f64) {
     let t0 = Instant::now();
-    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("CRYS-L server not running");
+    let mut stream = TcpStream::connect("127.0.0.1:9001").expect("QOMN server not running");
     let req = format!(
         "POST {} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
         path, body.len(), body

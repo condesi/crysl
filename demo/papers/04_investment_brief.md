@@ -1,4 +1,4 @@
-# CRYS-L / Qomni — Technical Investment Brief
+# QOMN / Qomni — Technical Investment Brief
 ## Qomni AI Lab · Condesi Perú · April 2026
 
 *Confidential — For qualified investors and strategic partners*
@@ -7,9 +7,9 @@
 
 ## Executive Summary
 
-Qomni AI Lab has developed **CRYS-L** (Crystal Language), a production-deployed, compiled domain-specific language for deterministic engineering optimization. The engine processes **154 million engineering scenarios per second** on commodity hardware, finds Pareto-optimal solutions in **1.84 milliseconds**, and operates with **zero crashes** under adversarial inputs.
+Qomni AI Lab has developed **QOMN** (Crystal Language), a production-deployed, compiled domain-specific language for deterministic engineering optimization. The engine processes **154 million engineering scenarios per second** on commodity hardware, finds Pareto-optimal solutions in **1.84 milliseconds**, and operates with **zero crashes** under adversarial inputs.
 
-CRYS-L is not a standalone product. It is the deterministic compute substrate of **Qomni** — a hybrid neuro-symbolic AI platform for engineering decision support. While large language models handle natural language and reasoning, CRYS-L handles exhaustive physics-constrained optimization. The combination produces capabilities neither component achieves alone.
+QOMN is not a standalone product. It is the deterministic compute substrate of **Qomni** — a hybrid neuro-symbolic AI platform for engineering decision support. While large language models handle natural language and reasoning, QOMN handles exhaustive physics-constrained optimization. The combination produces capabilities neither component achieves alone.
 
 **The market**: engineering software is a $9B+ annual market (CAD, simulation, compliance) with no AI-native player offering real-time deterministic optimization with LLM-level language understanding.
 
@@ -17,9 +17,9 @@ CRYS-L is not a standalone product. It is the deterministic compute substrate of
 
 ## The Technical Moat
 
-### What CRYS-L Does That Nothing Else Does
+### What QOMN Does That Nothing Else Does
 
-| Capability | CRYS-L | LLMs | CAD software | Traditional solvers |
+| Capability | QOMN | LLMs | CAD software | Traditional solvers |
 |-----------|--------|------|-------------|-------------------|
 | Natural language input | Via Qomni | ✅ | ❌ | ❌ |
 | Exhaustive space search | ✅ 154M/s | ❌ 1 answer/12s | Limited | Slow |
@@ -45,7 +45,7 @@ This enables full AVX2 SIMD vectorization (4 scenarios per instruction, 154M/s),
 
 ## Verified Benchmark Evidence
 
-All numbers are live, reproducible at: https://qomni.clanmarketer.com/crysl/demo/benchmark.html
+All numbers are live, reproducible at: https://qomni.clanmarketer.com/qomn/demo/benchmark.html
 
 ### Performance (April 2026 measurements)
 
@@ -65,7 +65,7 @@ For an engineering firm sizing a fire suppression system:
 |----------|-------------------------|----------------------|
 | Manual calculation | 4–8 hours | 4–8 hrs × $150/hr = $600–$1,200 |
 | Simulation software | 30–90 minutes | 0.5–1.5 hrs × $150/hr = $75–$225 |
-| Qomni + CRYS-L | **< 2 seconds** | Effectively 0 (automated) |
+| Qomni + QOMN | **< 2 seconds** | Effectively 0 (automated) |
 
 A firm handling 200 projects/year saves 800–1,600 engineer-hours — at $150/hr, that's $120,000–$240,000/year. A SaaS product at $500–$2,000/month per firm yields 20–40% ROI for the customer at enterprise pricing.
 
@@ -78,7 +78,7 @@ A firm handling 200 projects/year saves 800–1,600 engineer-hours — at $150/h
 │                    Qomni Platform                    │
 ├──────────────────────┬──────────────────────────────┤
 │   Language Layer     │    Compute Layer              │
-│   (LLM / Qomni)     │    (CRYS-L Engine)            │
+│   (LLM / Qomni)     │    (QOMN Engine)            │
 │                      │                              │
 │  • Intent parsing    │  • 154M scenarios/s          │
 │  • Natural language  │  • AVX2 SIMD kernel          │
@@ -94,7 +94,7 @@ A firm handling 200 projects/year saves 800–1,600 engineer-hours — at $150/h
 ### Infrastructure (Production, April 2026)
 
 - **Server**: Contabo Cloud VPS — AMD EPYC 12-core, 48GB RAM, 500GB NVMe (~$35/month)
-- **Service**: `crysl-nfpa.service` (systemd), Rust binary, port 9001
+- **Service**: `qomn-nfpa.service` (systemd), Rust binary, port 9001
 - **Proxy**: nginx SSL termination, `qomni.clanmarketer.com`
 - **EvolutionAPI**: WhatsApp integration (Server4, wa.clanmarketer.com)
 - **Uptime**: Active deployment, no downtime events in observation period
@@ -138,7 +138,7 @@ A firm handling 200 projects/year saves 800–1,600 engineer-hours — at $150/h
 - Revenue target: $500K ARR
 
 ### Phase 3 (2027+): Platform
-- Multi-tenant CRYS-L cloud (oracles as a service)
+- Multi-tenant QOMN cloud (oracles as a service)
 - Python SDK, integration with AutoCAD, Revit
 - WASM deployment for in-browser use
 - Revenue target: $5M ARR
@@ -152,13 +152,13 @@ A firm handling 200 projects/year saves 800–1,600 engineer-hours — at $150/h
 - 40% Engineering: macOS/ARM backend, Python bindings, additional domains
 - 30% Go-to-market: sales in Peru + Colombia + Mexico, engineering firm partnerships
 - 20% Infrastructure: dedicated bare-metal (no KVM, enables AVX-512, 2× throughput)
-- 10% Legal/IP: patent application for branchless physics mask + CRYS-L DSL
+- 10% Legal/IP: patent application for branchless physics mask + QOMN DSL
 
 **What we bring**:
 - Production-deployed, benchmarked, live system
 - Founder with 10+ years engineering + software background
 - $35/month infrastructure cost (extreme capital efficiency)
-- Working neuro-symbolic architecture (Qomni + CRYS-L)
+- Working neuro-symbolic architecture (Qomni + QOMN)
 
 **Contact**: Percy Rojas Masgo · percy.rojas@condesi.pe · +51 [contact via email]
 
@@ -170,10 +170,10 @@ Every number in this brief is verifiable right now:
 
 ```bash
 # Full benchmark suite (~30 seconds to run all 4 proofs)
-curl https://qomni.clanmarketer.com/crysl/api/benchmark/all | python3 -m json.tool
+curl https://qomni.clanmarketer.com/qomn/api/benchmark/all | python3 -m json.tool
 
 # Real-time throughput (WebSocket)
-# Open: https://qomni.clanmarketer.com/crysl/demo/benchmark.html
+# Open: https://qomni.clanmarketer.com/qomn/demo/benchmark.html
 ```
 
 We do not present simulated or projected numbers. The benchmarks run on the production server. The same server is used for actual Qomni customer workloads.

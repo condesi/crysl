@@ -1,10 +1,10 @@
-# CRYS-L Verification & Validation Report
+# QOMN Verification & Validation Report
 
-**System:** CRYS-L v3.2 — Crystal Language Compiler
+**System:** QOMN v3.2 — Crystal Language Compiler
 **Author:** Percy Rojas Masgo, Condesi Perú / Qomni AI Lab
 **Date:** 2026-04-17
-**Live demo:** https://qomni.clanmarketer.com/crysl/
-**Benchmark dashboard:** https://qomni.clanmarketer.com/crysl/demo/benchmark.html
+**Live demo:** https://qomni.clanmarketer.com/qomn/
+**Benchmark dashboard:** https://qomni.clanmarketer.com/qomn/demo/benchmark.html
 
 ---
 
@@ -25,7 +25,7 @@
 
 ## Proof 1: Deterministic Execution (Repeatability)
 
-**Claim (§4.2):** For any input, CRYS-L produces bit-exact identical outputs across all runs.
+**Claim (§4.2):** For any input, QOMN produces bit-exact identical outputs across all runs.
 
 **Tests:**
 - `fire_pump_determinism_10_runs` — 10 runs, variance = 0.000000000000
@@ -39,14 +39,14 @@
 Timing jitter is present (OS scheduler) but compute output is invariant.
 
 **Why this matters:**
-LLMs are stochastic by design (temperature > 0). CRYS-L is deterministic by construction:
+LLMs are stochastic by design (temperature > 0). QOMN is deterministic by construction:
 same algebraic formula, same IEEE-754 arithmetic, same JIT code path, same result.
 
 ---
 
 ## Proof 2: NaN-Shield (Adversarial Resilience)
 
-**Claim (§5.1):** CRYS-L handles all adversarial inputs without panicking or producing undefined behavior.
+**Claim (§5.1):** QOMN handles all adversarial inputs without panicking or producing undefined behavior.
 
 **Tests run:**
 - `zero_inputs_no_panic` — all 5 plans with all-zero inputs
@@ -71,7 +71,7 @@ same algebraic formula, same IEEE-754 arithmetic, same JIT code path, same resul
 
 ## Proof 3: SLO & Latency Distribution
 
-**Claim (§3.4):** CRYS-L compute p50 < 100µs, p99 < 1ms. Roundtrip is dominated by network overhead.
+**Claim (§3.4):** QOMN compute p50 < 100µs, p99 < 1ms. Roundtrip is dominated by network overhead.
 
 **Tests:**
 - `slo_roundtrip_within_targets_50_samples` — p99 roundtrip < 500ms (localhost)
@@ -102,7 +102,7 @@ Compute = 9µs. Network stack = 211ms. Ratio ≈ 23,000×.
 
 ## Proof 4: Plan Coverage (All 56 Oracles)
 
-**Claim (§2):** CRYS-L v3.2 provides 56 deterministic engineering oracles across 12 domains.
+**Claim (§2):** QOMN v3.2 provides 56 deterministic engineering oracles across 12 domains.
 
 **Domains:**
 | Domain | Plans | Examples |
@@ -156,7 +156,7 @@ cargo test --test all_56_plans -- --nocapture
 cargo test --test adversarial -- --include-ignored --nocapture
 
 # Run against live demo server
-CRYSL_HOST=qomni.clanmarketer.com CRYSL_PORT=443 cargo test --test golden
+QOMN_HOST=qomni.clanmarketer.com QOMN_PORT=443 cargo test --test golden
 ```
 
 ---
@@ -175,8 +175,8 @@ CRYSL_HOST=qomni.clanmarketer.com CRYSL_PORT=443 cargo test --test golden
 **Comparison baseline:**
 - Python 3.12 equivalent computations: ~2,288 ops/s
 - GPT-4 Turbo inference: ~800ms median, non-deterministic
-- CRYS-L speedup vs Python: **1.53 billion ×** (benchmark mode)
+- QOMN speedup vs Python: **1.53 billion ×** (benchmark mode)
 
 ---
 
-*CRYS-L is open-source (Apache-2.0). Test suite and source: https://github.com/condesi/crysl*
+*QOMN is open-source (Apache-2.0). Test suite and source: https://github.com/condesi/qomn*

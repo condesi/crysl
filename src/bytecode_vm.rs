@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v1.6 — Bytecode VM (wired to Runtime + Backend CPU + JIT)
+// QOMN v1.6 — Bytecode VM (wired to Runtime + Backend CPU + JIT)
 //
 // Arquitectura:
 //   dispatch loop plano (cero recursión AST)
@@ -14,9 +14,9 @@
 // ═══════════════════════════════════════════════════════════════════════
 
 use std::collections::HashMap;
-use crate::bytecode::{Module, Op, Const, CrysLoadMode, ActFn};
+use crate::bytecode::{Module, Op, Const, QomnoadMode, ActFn};
 use crate::backend_cpu::{tgemv_ternary, apply_activation, unpack_2bit, ActFunc};
-use crate::runtime::{CrysRuntime, OracleTicket};
+use crate::runtime::{QomnRuntime, OracleTicket};
 use crate::jit::JitEngine;
 
 // ── Runtime Value ─────────────────────────────────────────────────────
@@ -131,7 +131,7 @@ impl BytecodeVm {
     pub fn run(
         &mut self,
         module:  &Module,
-        runtime: &mut CrysRuntime,
+        runtime: &mut QomnRuntime,
     ) -> Result<Vec<String>, String> {
         self.output.clear();
         self.vars.resize(module.vars.len().max(64), BVal::Null);
@@ -177,7 +177,7 @@ impl BytecodeVm {
                 // ── Crystal load (with cache mode) ─────────────────
                 Op::LoadCrys => {
                     let cid  = instr.b as usize;
-                    let mode = CrysLoadMode::from(instr.flags & 0x03);
+                    let mode = QomnoadMode::from(instr.flags & 0x03);
                     let path = module.crystals.get(cid)
                         .map(|c| c.path.clone())
                         .unwrap_or_default();
@@ -186,7 +186,7 @@ impl BytecodeVm {
                         .unwrap_or_default();
 
                     // Issue prefetch for PREFETCH mode (async, non-blocking)
-                    if mode == CrysLoadMode::Prefetch && runtime.crystal_cache.is_loaded(cid) {
+                    if mode == QomnoadMode::Prefetch && runtime.crystal_cache.is_loaded(cid) {
                         // Already cached — no-op
                     }
 
@@ -316,7 +316,7 @@ impl BytecodeVm {
                         .unwrap_or_default();
                     let mode = module.crystals.get(cid)
                         .map(|c| c.mode)
-                        .unwrap_or(CrysLoadMode::Stream);
+                        .unwrap_or(QomnoadMode::Stream);
 
                     // Get input vector
                     let x_vec: Vec<f32> = match &regs[x_reg] {
@@ -658,7 +658,7 @@ impl BytecodeVm {
 /// Returns the Respond outputs produced by this lane.
 fn run_fork_lane(module: &Module, entry_ip: usize, mut regs: Box<[BVal; 256]>) -> Vec<String> {
     // Fresh runtime: 2 oracle workers per lane — keeps thread overhead low
-    let mut rt   = crate::runtime::CrysRuntime::new(2);
+    let mut rt   = crate::runtime::QomnRuntime::new(2);
     let mut out  = Vec::new();
     let mut ip   = entry_ip;
     let code_len = module.code.len();
@@ -728,7 +728,7 @@ fn run_fork_lane(module: &Module, entry_ip: usize, mut regs: Box<[BVal; 256]>) -
 
             Op::LoadCrys => {
                 let cid  = instr.b as usize;
-                let mode = CrysLoadMode::from(instr.flags & 0x03);
+                let mode = QomnoadMode::from(instr.flags & 0x03);
                 let path = module.crystals.get(cid).map(|c| c.path.clone()).unwrap_or_default();
                 let name = module.crystals.get(cid).map(|c| c.name.clone()).unwrap_or_default();
                 let _ = rt.crystal_cache.load(cid, &path, mode);
@@ -739,7 +739,7 @@ fn run_fork_lane(module: &Module, entry_ip: usize, mut regs: Box<[BVal; 256]>) -
                 let cid  = instr.b as usize;
                 let x_reg = instr.c as usize;
                 let path = module.crystals.get(cid).map(|c| c.path.clone()).unwrap_or_default();
-                let mode = module.crystals.get(cid).map(|c| c.mode).unwrap_or(CrysLoadMode::Stream);
+                let mode = module.crystals.get(cid).map(|c| c.mode).unwrap_or(QomnoadMode::Stream);
                 let x_vec: Vec<f32> = match &regs[x_reg] {
                     BVal::Fvec(v) => v.clone(),
                     BVal::Tvec(v) => v.iter().map(|&t| t as f32).collect(),
@@ -905,7 +905,7 @@ fn eval_arith_bval(l: &BVal, r: &BVal, op: Op) -> BVal {
 // ── Public API ────────────────────────────────────────────────────────
 
 /// Run a program via the Bytecode VM using the full Runtime (v1.4).
-pub fn run_bytecode(module: &Module, runtime: &mut CrysRuntime) -> Result<Vec<String>, String> {
+pub fn run_bytecode(module: &Module, runtime: &mut QomnRuntime) -> Result<Vec<String>, String> {
     BytecodeVm::new().run(module, runtime)
 }
 
@@ -918,7 +918,7 @@ pub fn run_bytecode(module: &Module, runtime: &mut CrysRuntime) -> Result<Vec<St
 ///            (e.g. from `JitEngine::compile_all`).
 pub fn run_bytecode_jit(
     module:  &Module,
-    runtime: &mut CrysRuntime,
+    runtime: &mut QomnRuntime,
     engine:  JitEngine,
 ) -> Result<Vec<String>, String> {
     BytecodeVm::new().with_jit(engine).run(module, runtime)

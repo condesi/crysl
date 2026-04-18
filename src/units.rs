@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// CRYS-L v2.0 — Physical Unit Algebra & NFPA Validation
+// QOMN v2.0 — Physical Unit Algebra & NFPA Validation
 // Percy Rojas M. · Qomni AI Lab · 2026
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -269,7 +269,7 @@ static CONV_TABLE: &[Conv] = &[
 ///
 /// # Examples
 /// ```
-/// use crysl_lib::units::convert;
+/// use qomn_lib::units::convert;
 /// assert!((convert(100.0, "ft2", "m2").unwrap() - 9.29).abs() < 0.01);
 /// assert!((convert(65.0,  "psi", "bar").unwrap() - 4.48).abs() < 0.01);
 /// assert!((convert(100.0, "gpm", "Ls").unwrap()  - 6.31).abs() < 0.01);
@@ -294,7 +294,7 @@ pub fn convert(value: f64, from: &str, to: &str) -> Result<f64, String> {
     }
 
     Err(format!(
-        "CRYS-L: no unit conversion for '{}' → '{}'. \
+        "QOMN: no unit conversion for '{}' → '{}'. \
          Supported: ft2↔m2, psi↔bar/kPa, gpm↔Ls/m3h, ft↔m, HP↔kW, C↔F↔K, lb↔kg",
         from, to
     ))

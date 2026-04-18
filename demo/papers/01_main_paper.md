@@ -1,4 +1,4 @@
-# CRYS-L: A Domain-Specific Language for High-Throughput Deterministic Multi-Objective Engineering Optimization
+# QOMN: A Domain-Specific Language for High-Throughput Deterministic Multi-Objective Engineering Optimization
 
 **Percy Rojas Masgo**
 Qomni AI Lab · Condesi Perú
@@ -10,7 +10,7 @@ percy.rojas@condesi.pe · qomni.clanmarketer.com
 
 ## Abstract
 
-We present **CRYS-L** (Crystal Language), a compiled domain-specific language and runtime engine designed for exhaustive, deterministic multi-objective optimization in engineering domains. CRYS-L introduces a declarative `oracle/plan` syntax that compiles to an AVX2-accelerated Structure-of-Arrays (SoA) kernel executing up to **154 million engineering scenarios per second** on commodity x86-64 hardware, with a measured latency standard deviation (σ) of **3,334 ns** under SCHED_FIFO scheduling — **254× lower** than an untuned Linux baseline (σ ≈ 850,000 ns). The runtime incorporates a branchless physics guard layer implementing NFPA 20 constraints, adversarial resilience under 1.28 million injected invalid inputs with zero panics, and a 3-objective Pareto optimizer returning 170 non-dominated solutions in **1.84 ms**. A multi-backend compilation pipeline emits JIT code via Cranelift, LLVM 18 IR for native shared libraries, and WebAssembly Text Format (WAT) for browser deployment. We report empirical evidence that for exhaustive engineering optimization workloads, a deterministic compute engine of this class evaluates configurations at a rate approximately **1.53 billion times higher** (conservative paper figure, based on 7.83 ns/tick) than the throughput of a large language model performing the same task sequentially. CRYS-L is positioned not as a competitor to neural language models, but as a complementary deterministic reasoning substrate in hybrid neuro-symbolic architectures.
+We present **QOMN** (Crystal Language), a compiled domain-specific language and runtime engine designed for exhaustive, deterministic multi-objective optimization in engineering domains. QOMN introduces a declarative `oracle/plan` syntax that compiles to an AVX2-accelerated Structure-of-Arrays (SoA) kernel executing up to **154 million engineering scenarios per second** on commodity x86-64 hardware, with a measured latency standard deviation (σ) of **3,334 ns** under SCHED_FIFO scheduling — **254× lower** than an untuned Linux baseline (σ ≈ 850,000 ns). The runtime incorporates a branchless physics guard layer implementing NFPA 20 constraints, adversarial resilience under 1.28 million injected invalid inputs with zero panics, and a 3-objective Pareto optimizer returning 170 non-dominated solutions in **1.84 ms**. A multi-backend compilation pipeline emits JIT code via Cranelift, LLVM 18 IR for native shared libraries, and WebAssembly Text Format (WAT) for browser deployment. We report empirical evidence that for exhaustive engineering optimization workloads, a deterministic compute engine of this class evaluates configurations at a rate approximately **1.53 billion times higher** (conservative paper figure, based on 7.83 ns/tick) than the throughput of a large language model performing the same task sequentially. QOMN is positioned not as a competitor to neural language models, but as a complementary deterministic reasoning substrate in hybrid neuro-symbolic architectures.
 
 **Keywords:** domain-specific language, SIMD optimization, Pareto front, deterministic computation, neuro-symbolic AI, engineering optimization, AVX2, branchless computing
 
@@ -26,7 +26,7 @@ Engineering optimization problems — pump sizing under NFPA 20, structural load
 2. **The search space is tractable**: for problems with 3–6 continuous parameters, exhaustive stratified sampling at engineering precision covers the Pareto-optimal region within milliseconds on modern hardware.
 3. **Real-time requirements**: control systems, embedded devices, and decision-support tools require sub-millisecond responses that LLM inference cannot provide.
 
-CRYS-L (Crystal Language) addresses these requirements through four design principles:
+QOMN (Crystal Language) addresses these requirements through four design principles:
 
 - **Declarative oracles**: engineers write physics constraints and objective functions; the runtime handles parallelization.
 - **Branchless kernels**: all conditionals are replaced by floating-point mask operations, enabling full AVX2 vectorization without branch misprediction.
@@ -35,7 +35,7 @@ CRYS-L (Crystal Language) addresses these requirements through four design princ
 
 The primary contributions of this paper are:
 
-1. The CRYS-L language specification (oracle/plan syntax, type system, linalg extensions).
+1. The QOMN language specification (oracle/plan syntax, type system, linalg extensions).
 2. An AVX2-accelerated SoA kernel with branchless physics masking.
 3. Empirical benchmark results across four dimensions: jitter determinism, SIMD saturation, adversarial resilience, and comparative throughput vs. LLM inference.
 4. A deployed REST API and WebSocket interface for real-time visualization.
@@ -46,15 +46,15 @@ The primary contributions of this paper are:
 
 ### 2.1 Domain-Specific Languages for Engineering
 
-Prior work on engineering DSLs includes Modelica [MODELICA] for physical systems modeling, Halide [HALIDE] for image processing pipelines, and SPIRAL [SPIRAL] for signal processing code generation. CRYS-L differs in targeting interactive optimization workloads rather than batch simulation, with emphasis on sub-millisecond Pareto front computation and a declarative syntax accessible to domain engineers without compiler expertise.
+Prior work on engineering DSLs includes Modelica [MODELICA] for physical systems modeling, Halide [HALIDE] for image processing pipelines, and SPIRAL [SPIRAL] for signal processing code generation. QOMN differs in targeting interactive optimization workloads rather than batch simulation, with emphasis on sub-millisecond Pareto front computation and a declarative syntax accessible to domain engineers without compiler expertise.
 
 ### 2.2 SIMD Vectorization for Numerical Workloads
 
-AVX2 (Advanced Vector Extensions 2) provides 256-bit wide SIMD operations, processing 4 double-precision floats per instruction. Existing work on auto-vectorization [GCC-AUTOVEC, LLVM-SLP] shows that branchy code is difficult to vectorize automatically. CRYS-L achieves vectorization by design through the branchless mask pattern: `output[i] = value[i] * valid[i]`, where `valid[i] ∈ {0.0, 1.0}`, eliminating all conditional branches in the hot loop.
+AVX2 (Advanced Vector Extensions 2) provides 256-bit wide SIMD operations, processing 4 double-precision floats per instruction. Existing work on auto-vectorization [GCC-AUTOVEC, LLVM-SLP] shows that branchy code is difficult to vectorize automatically. QOMN achieves vectorization by design through the branchless mask pattern: `output[i] = value[i] * valid[i]`, where `valid[i] ∈ {0.0, 1.0}`, eliminating all conditional branches in the hot loop.
 
 ### 2.3 Multi-Objective Optimization
 
-The Pareto front represents the set of solutions where no objective can be improved without worsening another [PARETO-DEB]. Standard NSGA-II [NSGA2] operates on populations over hundreds of generations. CRYS-L's approach is fundamentally different: it uses exhaustive stratified sweeping over a continuous parameter space, computing all candidates in a single pass and filtering non-dominated solutions in O(N²) where N ≤ 1024. This is tractable at the tick rate because the inner loop is memory-bandwidth-limited, not compute-limited.
+The Pareto front represents the set of solutions where no objective can be improved without worsening another [PARETO-DEB]. Standard NSGA-II [NSGA2] operates on populations over hundreds of generations. QOMN's approach is fundamentally different: it uses exhaustive stratified sweeping over a continuous parameter space, computing all candidates in a single pass and filtering non-dominated solutions in O(N²) where N ≤ 1024. This is tractable at the tick rate because the inner loop is memory-bandwidth-limited, not compute-limited.
 
 ### 2.4 LLM Limitations for Optimization
 
@@ -66,9 +66,9 @@ LLMs have demonstrated impressive performance on mathematical reasoning [MATHBEN
 
 ### 3.1 Syntax Overview
 
-CRYS-L uses a Python-indented syntax with `oracle` as the primary declaration unit:
+QOMN uses a Python-indented syntax with `oracle` as the primary declaration unit:
 
-```crysl
+```qomn
 oracle nfpa20_pump_hp(flow_gpm: float, head_psi: float, efficiency: float) -> float:
     let q_lps = flow_gpm * 0.06309
     let h_m   = head_psi  * 0.70307
@@ -86,7 +86,7 @@ Boolean conditions are expressed as float multiplications (`0.0` or `1.0`), whic
 
 ### 3.2 Type System
 
-CRYS-L v2.7+ supports scalar and vector types:
+QOMN v2.7+ supports scalar and vector types:
 
 | Type | Description |
 |------|-------------|
@@ -102,7 +102,7 @@ Linear algebra built-ins (`dot`, `cross`, `norm`, `normalize`, `det`, `transpose
 
 `plan` declarations compose multiple oracles into engineering workflows:
 
-```crysl
+```qomn
 plan pump_sizing(Q_gpm: float, P_psi: float, eff: float):
     let hp   = nfpa20_pump_hp(Q_gpm, P_psi, eff)
     let valid = pump_valid(Q_gpm, P_psi, eff)
@@ -165,7 +165,7 @@ _mm256_storeu_pd(soa.out[0].as_mut_ptr().add(i), _mm256_mul_pd(hp, vv));
 
 ### 4.4 Multi-Backend Compilation
 
-CRYS-L oracles compile to three backends:
+QOMN oracles compile to three backends:
 
 | Backend | Output | Use Case |
 |---------|--------|----------|
@@ -189,12 +189,12 @@ For N = 1024 valid candidates, this is ~1M comparisons, executing in **1.84 ms**
 
 ### 4.6 REST API
 
-The CRYS-L server exposes a JSON REST API on port 9001:
+The QOMN server exposes a JSON REST API on port 9001:
 
 ```
 GET  /health                       Engine status
 POST /plan/execute                 Execute named plan
-POST /eval                         Evaluate CRYS-L expression
+POST /eval                         Evaluate QOMN expression
 POST /compile                      Compile to LLVM IR or WASM
 GET  /simulation/simd_density      SIMD saturation proof
 POST /simulation/jitter_bench      Jitter determinism proof
@@ -219,7 +219,7 @@ WS   /ws/sim                       Real-time Pareto heatmap stream
 | SIMD | AVX2 + FMA (no AVX-512, blocked by KVM hypervisor) |
 | Server | Contabo Cloud VPS, 500 GB NVMe |
 
-All benchmarks run on the same physical node hosting the CRYS-L service. Concurrency note: Proofs 2–4 run while the simulation engine is active; Proof 1 (jitter) uses SCHED_FIFO to pre-empt other threads.
+All benchmarks run on the same physical node hosting the QOMN service. Concurrency note: Proofs 2–4 run while the simulation engine is active; Proof 1 (jitter) uses SCHED_FIFO to pre-empt other threads.
 
 ### 5.2 Proof 1 — Jitter Determinism
 
@@ -227,7 +227,7 @@ All benchmarks run on the same physical node hosting the CRYS-L service. Concurr
 
 **Results**:
 
-| Metric | CRYS-L (SCHED_FIFO) | Reference baseline |
+| Metric | QOMN (SCHED_FIFO) | Reference baseline |
 |--------|--------------------|--------------------|
 | min | 3,777 ns | — |
 | mean | 6,327 ns | — |
@@ -257,7 +257,7 @@ All benchmarks run on the same physical node hosting the CRYS-L service. Concurr
 
 **Important note on utilization**: 16.9% utilization vs. AVX2 theoretical maximum reflects a **memory-bandwidth bottleneck**, not a compute bottleneck. At 1024 scenarios × 8 fields × 8 bytes = 65 KB per tick, each tick moves data across the L1→L2→L3 cache hierarchy. The theoretical maximum assumes compute-bound operation with perfect cache reuse. This is a known characteristic of streaming SoA workloads and is not a deficiency of the kernel design.
 
-**Comparison note**: The reference C++ baseline (≈5M/s) applies to a representative hydraulic solver implementation using scalar if/else logic without SIMD. The ~25× throughput advantage observed in this benchmark configuration is specific to: (a) this computational kernel, (b) this hardware, (c) branchless vs. branchy scalar comparison. It does not imply CRYS-L is universally faster than all C++ implementations for all workloads.
+**Comparison note**: The reference C++ baseline (≈5M/s) applies to a representative hydraulic solver implementation using scalar if/else logic without SIMD. The ~25× throughput advantage observed in this benchmark configuration is specific to: (a) this computational kernel, (b) this hardware, (c) branchless vs. branchy scalar comparison. It does not imply QOMN is universally faster than all C++ implementations for all workloads.
 
 ### 5.4 Proof 3 — Adversarial Resilience
 
@@ -276,17 +276,17 @@ All benchmarks run on the same physical node hosting the CRYS-L service. Concurr
 
 **On NaN propagation**: the scalar fallback path computes `out[i] = hp * valid[i]`. When `hp = NaN` (from a NaN input) and `valid[i] = 0.0`, IEEE 754 specifies `NaN × 0.0 = NaN` — the zero-mask does not suppress NaN. The AVX2 path uses `_mm256_blendv_pd`, which correctly selects 0.0 for invalid lanes. This is documented expected behavior per IEEE 754-2008 §6.2. The critical guarantee is **zero panics and no undefined behavior**, not zero NaN outputs.
 
-**Comparison note**: a native implementation without explicit physics validation may propagate invalid floating-point states silently or produce undefined behavior depending on compiler flags and hardware FPU settings. CRYS-L's explicit guard layer provides a deterministic safety boundary regardless of input.
+**Comparison note**: a native implementation without explicit physics validation may propagate invalid floating-point states silently or produce undefined behavior depending on compiler flags and hardware FPU settings. QOMN's explicit guard layer provides a deterministic safety boundary regardless of input.
 
 ### 5.5 Proof 4 — Throughput Ratio vs. LLM Inference
 
-**Methodology**: We measure CRYS-L's scenario evaluation rate and compare it to the throughput of a large language model (GPT-4 Turbo) performing an equivalent engineering optimization query. The comparison is inherently asymmetric — these systems solve different aspects of the problem — but quantifies the throughput differential for the specific task of configuration space exploration.
+**Methodology**: We measure QOMN's scenario evaluation rate and compare it to the throughput of a large language model (GPT-4 Turbo) performing an equivalent engineering optimization query. The comparison is inherently asymmetric — these systems solve different aspects of the problem — but quantifies the throughput differential for the specific task of configuration space exploration.
 
 **LLM baseline**: GPT-4 Turbo (as of early 2026) requires approximately 10–15 seconds for a detailed engineering optimization query with chain-of-thought reasoning. We use 12 seconds as a central estimate, yielding 0.083 answers per 12-second window.
 
 | Metric | Value |
 |--------|-------|
-| CRYS-L scenarios/s (dedicated bench) | 154,439,021 |
+| QOMN scenarios/s (dedicated bench) | 154,439,021 |
 | In 12 seconds | 1,853,268,252 configurations |
 | LLM answers in 12 seconds | ~1 |
 | **Throughput ratio (computed)** | **1,853,268,252×** |
@@ -298,7 +298,7 @@ All benchmarks run on the same physical node hosting the CRYS-L service. Concurr
 - *Computed* (1.85B×): based on live `direct_throughput_bench` measurement with CPU-dedicated focus.
 - *Paper figure* (1.53B×): conservative estimate based on `12 s / 7.83 ns/tick = 1.532B`. The 7.83 ns/tick is a measured AOT-compiled tick time. We report the conservative figure for reproducibility claims.
 
-**Interpretation**: This ratio does not mean "CRYS-L is 1.5 billion times smarter than a LLM". It means: for the specific task of *exhaustively enumerating and scoring configurations in a bounded engineering parameter space*, a deterministic compute engine of this class processes configurations at a rate that is approximately 1.53B times the throughput of sequential LLM inference. The LLM provides capabilities CRYS-L cannot: language understanding, context reasoning, cross-domain generalization.
+**Interpretation**: This ratio does not mean "QOMN is 1.5 billion times smarter than a LLM". It means: for the specific task of *exhaustively enumerating and scoring configurations in a bounded engineering parameter space*, a deterministic compute engine of this class processes configurations at a rate that is approximately 1.53B times the throughput of sequential LLM inference. The LLM provides capabilities QOMN cannot: language understanding, context reasoning, cross-domain generalization.
 
 ---
 
@@ -306,29 +306,29 @@ All benchmarks run on the same physical node hosting the CRYS-L service. Concurr
 
 ### 6.1 Accessing the Public API
 
-The CRYS-L engine is publicly accessible via the Qomni platform:
+The QOMN engine is publicly accessible via the Qomni platform:
 
 ```bash
 # Evaluate an oracle
-curl -X POST https://qomni.clanmarketer.com/crysl/api/eval \
+curl -X POST https://qomni.clanmarketer.com/qomn/api/eval \
   -H "Content-Type: application/json" \
   -d '{"expr": "nfpa20_pump_hp(500.0, 100.0, 0.75)"}'
 
 # Execute a plan
-curl -X POST https://qomni.clanmarketer.com/crysl/api/plan/execute \
+curl -X POST https://qomni.clanmarketer.com/qomn/api/plan/execute \
   -H "Content-Type: application/json" \
   -d '{"plan": "plan_pump_sizing", "params": {"Q_gpm": 500, "P_psi": 100, "eff": 0.75}}'
 
 # Run SIMD benchmark proof
-curl https://qomni.clanmarketer.com/crysl/api/simulation/simd_density
+curl https://qomni.clanmarketer.com/qomn/api/simulation/simd_density
 
 # Live benchmark dashboard
-open https://qomni.clanmarketer.com/crysl/demo/benchmark.html
+open https://qomni.clanmarketer.com/qomn/demo/benchmark.html
 ```
 
-### 6.2 Writing a CRYS-L Oracle
+### 6.2 Writing a QOMN Oracle
 
-```crysl
+```qomn
 # Beam deflection (structural engineering)
 oracle beam_deflection(load_kn: float, span_m: float, E_gpa: float, I_cm4: float) -> float:
     let E_pa  = E_gpa * 1e9
@@ -362,7 +362,7 @@ oracle voltage_drop_3ph(I_a: float, L_m: float, R_ohm_km: float, pf: float) -> f
 | macOS arm64 (NEON) | 🔄 Planned v3.3 |
 | Windows x86-64 | 🔄 Planned v3.3 |
 | Browser (WASM) | ✅ v3.1+ via WAT compilation |
-| Rust integration | ✅ `crysl` crate (internal) |
+| Rust integration | ✅ `qomn` crate (internal) |
 | Python bindings | 🔄 Planned v3.4 |
 | REST API (any language) | ✅ JSON over HTTP/HTTPS |
 
@@ -372,9 +372,9 @@ oracle voltage_drop_3ph(I_a: float, L_m: float, R_ohm_km: float, pf: float) -> f
 
 ### 7.1 Neuro-Symbolic Position
 
-CRYS-L is not designed to replace neural language models. It occupies the deterministic, verifiable, compute-intensive layer of a hybrid architecture. In the Qomni system, a language model handles intent parsing and natural language interaction; CRYS-L handles physics computation and optimization. Neither layer replaces the other.
+QOMN is not designed to replace neural language models. It occupies the deterministic, verifiable, compute-intensive layer of a hybrid architecture. In the Qomni system, a language model handles intent parsing and natural language interaction; QOMN handles physics computation and optimization. Neither layer replaces the other.
 
-This hybrid approach aligns with growing research interest in neuro-symbolic systems [NEUROSYM], where neural components handle perception and language while symbolic components handle logical and mathematical reasoning. CRYS-L's contribution is a practical, deployed implementation of the symbolic layer for engineering domains.
+This hybrid approach aligns with growing research interest in neuro-symbolic systems [NEUROSYM], where neural components handle perception and language while symbolic components handle logical and mathematical reasoning. QOMN's contribution is a practical, deployed implementation of the symbolic layer for engineering domains.
 
 ### 7.2 Reproducibility
 
@@ -392,7 +392,7 @@ All four benchmark proofs are available via the live API endpoint and the open b
 
 ## 8. Conclusion
 
-CRYS-L demonstrates that a purpose-built, SIMD-accelerated DSL can achieve performance characteristics that qualitatively separate it from both general-purpose C++ (in the context of this benchmark configuration) and large language model inference for exhaustive engineering optimization. The key contributions — branchless physics masking, multi-backend compilation, real-time Pareto visualization, and adversarial robustness — form a complete engineering optimization runtime accessible via REST API.
+QOMN demonstrates that a purpose-built, SIMD-accelerated DSL can achieve performance characteristics that qualitatively separate it from both general-purpose C++ (in the context of this benchmark configuration) and large language model inference for exhaustive engineering optimization. The key contributions — branchless physics masking, multi-backend compilation, real-time Pareto visualization, and adversarial robustness — form a complete engineering optimization runtime accessible via REST API.
 
 The 1.53 billion× throughput ratio vs. sequential LLM inference is not a claim about intelligence: it is a measurement of what happens when the right computational tool is applied to the right class of problem. For bounded, verifiable engineering optimization, deterministic exhaustive search with SIMD acceleration is that tool.
 
@@ -416,8 +416,8 @@ Future work includes AVX-512 support, ARM NEON backend, Python bindings, and ext
 
 ---
 
-*Live benchmark dashboard*: https://qomni.clanmarketer.com/crysl/demo/benchmark.html
-*API endpoint*: https://qomni.clanmarketer.com/crysl/api/
+*Live benchmark dashboard*: https://qomni.clanmarketer.com/qomn/demo/benchmark.html
+*API endpoint*: https://qomni.clanmarketer.com/qomn/api/
 *Contact*: percy.rojas@condesi.pe
 
 © 2026 Qomni AI Lab · Condesi Perú. Preprint. All rights reserved pending submission.
