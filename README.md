@@ -18,6 +18,12 @@ jitter σ                      = 157,036 ns vs C++ σ = 850,000 ns  (5× more st
 throughput                    = 118M+ simulations/sec on a single $80/month VPS
 ```
 
+
+
+
+
+
+
 ---
 
 ## Reproduce the hash
@@ -115,6 +121,21 @@ curl -X POST https://desarrollador.xyz/api/plan/execute \
   -d '{"plan":"plan_voltage_drop","params":{"I":100,"L_m":50,"A_mm2":35}}'
 # V_drop = 4.914286 V — same bits, every server, every run
 ```
+
+{"ok":true,"plan":"plan_full_fire_system","result":{
+  "plan": "plan_full_fire_system",
+  "steps": [
+    {"step":"friction", "oracle":"hw_friction_loss_psi", "result":16.828127, "latency_ns":0.0},
+    {"step":"elevation", "oracle":"elevation_head_psi", "result":21.645022, "latency_ns":0.0},
+    {"step":"fittings", "oracle":"fittings_loss_psi", "result":4.207032, "latency_ns":0.0},
+    {"step":"total_psi", "oracle":"total_system_psi", "result":57.680181, "latency_ns":0.0},
+    {"step":"pump_hp", "oracle":"nfpa20_pump_hp", "result":9.710468, "latency_ns":0.0},
+    {"step":"shutoff_p", "oracle":"nfpa20_shutoff_pressure", "result":80.752253, "latency_ns":0.0},
+    {"step":"flow_150pct", "oracle":"nfpa20_150pct_flow", "result":750.000000, "latency_ns":0.0}
+  ],
+  "total_ns": 34394.0,
+  "cache_hits": 0
+}}
 
 ---
 
