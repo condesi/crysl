@@ -42,7 +42,7 @@ X-Deterministic: true
 X-IEEE-754: enforced
 ```
 
-**Live dashboard:** https://desarrollador.xyz/demo/benchmark.html
+**Live dashboard:** https://desarrollador.xyz
 
 ---
 
@@ -176,4 +176,4 @@ Production access: percy.rojas@condesi.pe
 
 Percy Rojas Masgo — Condesi Perú / Qomni AI Lab  
 percy.rojas@condesi.pe  
-https://desarrollador.xyz/demo/benchmark.html
+https://desarrollador.xyz
