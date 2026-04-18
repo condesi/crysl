@@ -14,8 +14,8 @@ Not an estimator. Not a model. Physics expressions compiled to Cranelift JIT + A
 global_hash(10K scenarios)    = 2a59c51d551897a910e12d6d8fbaa14fe5bd91a5df87f92b1adee67b0f18f40c
 variance across 20 runs       = 0.000000000000  (not "near zero" — exactly zero)
 panics on 12,800,000 poisons  = 0
-jitter σ                      = 157,036 ns vs C++ σ = 850,000 ns  (5× more stable)
-throughput                    = 118M+ simulations/sec on a single $80/month VPS
+jitter σ                      = 7,969 ns vs C++ σ = 850,000 ns  (106× more stable)
+throughput                    = 101M+ simulations/sec on a single $80/month VPS
 ```
 
 
@@ -71,7 +71,7 @@ curl https://desarrollador.xyz/simulation/repeatability
 # NaN Shield: 12.8M adversarial inputs, 0 panics, 64M evals/s maintained
 curl -X POST https://desarrollador.xyz/simulation/adversarial -d '{"ticks":50000}'
 
-# Jitter proof: σ=157,036ns vs C++ σ=850,000ns
+# Jitter proof: σ=7,969ns vs C++ σ=850,000ns
 curl -X POST https://desarrollador.xyz/simulation/jitter_bench -d '{"ticks":100000}'
 
 # All 56 physics plans
@@ -154,7 +154,7 @@ curl -X POST https://desarrollador.xyz/api/plan/execute \
 | 9 | Overflow `1e308×1e308` | `+inf` (safe saturation) — no crash, no UB |
 | 10 | Garbage/injection inputs | Rejected — path traversal, NaN strings, null all blocked |
 | 11 | 50% CPU stress latency | P99=4,425µs · P999=4,902µs — no engine degradation |
-| 12 | SIMD saturation | `118M evals/s` · `23.6× vs C++` · `avx2+fma` |
+| 12 | SIMD saturation | `101M evals/s` · `20.2× vs C++` · `avx2+fma` |
 | 13 | JIT branch elimination | `501 ns/plan` — Cranelift eliminates all branches at compile time |
 | 14 | Unaligned memory access | `VMOVDQU` — <1 cycle penalty, safe on all architectures |
 | 15 | Energy efficiency | `3.4M evals/joule` · 1B scenarios = 296 joules |
@@ -200,7 +200,7 @@ plan plan_pump_sizing(Q_gpm: float, P_psi: float, eff: float = 0.70):
 
 | System | Scenarios/s | Jitter σ | Determinism | Cost/month |
 |---|---|---|---|---|
-| **QOMN v3.2 AVX2** | **118M+** | **157K ns** | **IEEE-754 exact** | **$80** |
+| **QOMN v3.2 AVX2** | **101M+** | **7.9K ns** | **IEEE-754 exact** | **$80** |
 | C++ GCC -O3 | ~5M | ~850,000 ns | risk: UB on NaN path | same HW |
 | Python/NumPy | ~200K | >1ms | risk: version drift | same HW |
 
@@ -232,7 +232,7 @@ Physics guards (API boundary) — invalid inputs rejected before JIT
 Branchless oracle execution — VMULSD/VDIVSD, no branches in hot path
 OracleCache — 56 plans, zero heap allocation per call (stack-only results)
   ↓
-118M+ simulations/sec · 14 MB RAM at rest · 8.3 MB binary
+101M+ simulations/sec · 14 MB RAM at rest · 8.3 MB binary
 ```
 
 **Runtime:** Rust · Cranelift JIT · AVX2 + FMA
