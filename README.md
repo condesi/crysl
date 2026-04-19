@@ -291,6 +291,15 @@ QOMN does not. The hash above is the proof.
 
 ---
 
+## Related Repositories
+
+- **Academic preprint and reproducibility artifact:** [`condesi/qomn-paper`](https://github.com/condesi/qomn-paper)
+  — LaTeX source of the paper, bibliography, reproducibility scripts, installation guide for reviewers.
+- **Legacy language spec (archived):** [`condesi/crysl-lang`](https://github.com/condesi/crysl-lang)
+  — The original CRYS-L / QOMN v2.3 language specification repository. Read-only. Consolidated into this repo and `qomn-paper`.
+
+---
+
 ## Contact
 
 Percy Rojas Masgo — Condesi Perú / Qomni AI Lab
