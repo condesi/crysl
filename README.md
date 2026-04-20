@@ -444,9 +444,7 @@ standards. Working-group collaboration is welcomed.
 ## Related Repositories
 
 - **Academic preprint and reproducibility artifact:** [`condesi/qomn-paper`](https://github.com/condesi/qomn-paper)
-  — LaTeX source of the paper, bibliography, reproducibility scripts, installation guide for reviewers.
-- **Archived QOMN v2.3 spec repository:** [`condesi/crysl-lang`](https://github.com/condesi/crysl-lang) *(read-only)*
-  — Early QOMN language specification, kept under its original URL for reference continuity. Current specification lives in this repository (`QOMN_LANGUAGE_SPEC.md`) and in [`condesi/qomn-paper`](https://github.com/condesi/qomn-paper) (`LANGUAGE_SPEC.md`).
+  — LaTeX source of the paper, bibliography, reproducibility scripts, installation guide for reviewers. Current language specification lives in this repository (`QOMN_LANGUAGE_SPEC.md`) and in [`condesi/qomn-paper`](https://github.com/condesi/qomn-paper) (`LANGUAGE_SPEC.md`).
 
 ---
 
