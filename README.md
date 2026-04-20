@@ -77,8 +77,8 @@ curl -X POST https://desarrollador.xyz/simulation/adversarial -d '{"ticks":50000
 # Jitter proof: σ=7,969ns vs C++ σ=850,000ns
 curl -X POST https://desarrollador.xyz/simulation/jitter_bench -d '{"ticks":100000}'
 
-# All 56 physics plans
-curl https://desarrollador.xyz/plans
+# All 57 physics plans
+curl https://desarrollador.xyz/api/plans
 ```
 
 Every response carries non-cacheable identity headers:
@@ -209,7 +209,10 @@ plan plan_pump_sizing(Q_gpm: float, P_psi: float, eff: float = 0.70):
 
 ---
 
-## 56 Physics Plans across 10 domains
+## 57 Validation Plans across 10 domains
+
+> **These 57 plans are a validation sample, not a closed catalog.**
+> The architecture imposes no upper bound — the intended scope is **thousands of plans** organized into domain libraries maintained by certified professional engineers.
 
 ```
 Fire Protection   — NFPA 20 pump sizing, sprinkler design, Hazen-Williams pipe flow
@@ -229,7 +232,7 @@ Telecom           — Link budget, dB margin, path loss
 ## Architecture
 
 ```
-QOMN DSL (.qomn / all_domains.crys)
+QOMN DSL (.qomn / stdlib/all_domains.qomn)
   ↓ Cranelift JIT + AVX2 AOT compilation at startup (~10ms, one-time)
 Physics guards (API boundary) — invalid inputs rejected before JIT
 Branchless oracle execution — VMULSD/VDIVSD, no branches in hot path
@@ -248,7 +251,7 @@ OracleCache — 57 plans, zero heap allocation per call (stack-only results)
 
 ```
 POST /api/plan/execute          — run a named physics plan
-GET  /plans                     — list all 56 available plans
+GET  /api/plans                 — list all 57 available plans
 GET  /simulation/repeatability  — live determinism proof (variance=0)
 POST /simulation/adversarial    — live NaN shield proof (0 panics)
 POST /simulation/jitter_bench   — live jitter proof
@@ -267,7 +270,7 @@ curl https://desarrollador.xyz/health
 # "fma_path":"VFMADD231SD","no_fma":false
 
 # QOMN_NO_FMA=1: force VMULSD+VADDSD — identical hash on any CPU (ARM, AVX-512, no-FMA)
-QOMN_NO_FMA=1 qomn serve stdlib/all_domains.crys 9001
+QOMN_NO_FMA=1 qomn serve stdlib/all_domains.qomn 9001
 curl http://127.0.0.1:9001/health
 # "fma_path":"VMULSD+VADDSD (QOMN_NO_FMA)","no_fma":true
 ```
@@ -291,6 +294,150 @@ Engineering certifications require results that are **provably identical** acros
 
 An LLM hallucinates. C++ with `-ffast-math` drifts. Python floats version-shift.
 QOMN does not. The hash above is the proof.
+
+---
+
+## Vision — QOMN is more than a compute engine
+
+QOMN is the **deterministic execution kernel** of a broader architectural
+proposal for AI in regulated domains. Three layers:
+
+### 1. The kernel (this repository, Apache-2.0 — ready today)
+The DSL, JIT runtime, unit-aware type system with NFPA/IEC range checks,
+branchless oracle pattern, NaN-Shield hardened against **12.8 million
+adversarial inputs with zero panics**, and three interchangeable backends
+(Cranelift native, LLVM IR, WebAssembly) sharing a single stable bytecode
+IR. ~27,900 lines of Rust. Independently verifiable against the public
+HTTP API without credentials.
+
+### 2. The standard library at scale (community contribution)
+The current **57 plans are a validation sample across 10 domains**, not
+a closed catalog:
+
+```
+Fire protection   — NFPA 13, NFPA 20, NFPA 72          (thousands of provisions)
+Electrical        — IEC 60364, NEC                     (thousands of provisions)
+Structural        — AISC 360, ACI, ASCE 7              (thousands of provisions)
+Hydraulics        — Hazen-Williams, Manning
+HVAC              — ASHRAE cooling/heating loads
+Financial/payroll — national labor-code formulas
+Medical equipment — IEC 60601, clinical dosing
+Cybersecurity     — CVSS 3.1, password entropy
+Statistics        — confidence intervals, regression
+Transport         — braking distance, fleet economics
+```
+
+The architecture imposes **no upper bound on plan count**. Faithful
+implementation of all mainstream engineering codes requires on the order
+of **thousands of plans** distributed across specialized libraries
+maintained by certified domain experts. Reaching that scale is an
+explicit call for community contribution that this work accompanies.
+
+Open governance questions under active discussion:
+
+- How to **federate plan repositories** so contributions are not
+  bottlenecked on a single maintainer.
+- How to **version plans against versions of standards** (e.g. NFPA
+  13:2022 vs. NFPA 13:2025).
+- How to **formally verify** a plan remains faithful to its cited
+  standard clause across revisions.
+
+### 3. Qomni Cognitive OS (separate system, under active development)
+A cognitive orchestration layer **entirely free of large language
+models** — no OpenAI, Anthropic, Google, Meta, or any other LLM
+dependency. It composes deterministic strategies in a cascade, stopping
+at the first confident answer:
+
+- A **reflex cache** for zero-compute pattern matches on prior queries.
+- A **deterministic-compute tier backed by QOMN** — engineering
+  calculations route here for bit-exact results with citations.
+- A **hyperdimensional memory module** using 2,048-bit binary
+  hypervectors for sub-linear semantic retrieval without neural embedding.
+- A **mixture-of-experts retriever** with a consensus voting protocol.
+- An **adversarial veto layer** comparing candidate responses against
+  a curated fact database, blocking contradictions before output.
+- A **permanent indexed memory tier** persisting facts across sessions.
+
+Design philosophy: *a meaningful fraction of practical queries can be
+resolved without any neural-generation step*. Queries Qomni cannot
+answer deterministically are **rejected explicitly** rather than
+delegated to a stochastic model. QOMN serves as Qomni's fastest
+deterministic tier below reflex.
+
+Qomni Cognitive OS is **not yet public** and is outside this paper's
+verifiability claims; it is noted here to clarify how QOMN fits in the
+broader program.
+
+---
+
+## Who this serves
+
+**Neuro-symbolic AI researchers** — QOMN is a concrete reference for
+the deterministic-compute tier of a hybrid architecture. Routing
+research (when to invoke the DSL vs. a neural component) and
+confidence calibration can be evaluated against a running public
+system.
+
+**AI developers in industry** — the pattern *DSL for known formulas,
+LLM for open queries* reduces API cost and improves auditability.
+Apache-2.0 licensing permits commercial incorporation without copyleft
+friction.
+
+**Practicing engineers** — plans are plain-text source under version
+control. A fire-protection calculation can be diffed, reviewed, and
+signed off like a pull request — and it carries its governing-standard
+citation inline (`// NFPA 20:2022 §4.26`).
+
+**Regulators and certification bodies** — the determinism policy
+(explicit FMA, rounding, NaN canonicalization, denormal handling)
+provides a concrete technical target for discussions of *certifiable
+AI computation*. Independent verifiability requires no vendor
+cooperation.
+
+**Standards bodies** — machine-readable encoding of selected
+provisions of NFPA, IEC, AISC, ASHRAE, and related standards opens a
+channel for direct engagement with the bodies that maintain the source
+standards. Working-group collaboration is welcomed.
+
+---
+
+## Typical usage scenarios
+
+- **Engineering design review** — reproduce any calculation from a
+  signed drawing by running its `.qomn` source; diff plans across
+  design revisions like any other source artifact.
+- **Compliance audit** — regulator reruns the same plan with the same
+  inputs and gets the same bits, without vendor cooperation.
+- **Neuro-symbolic AI backend** — an LLM parses a natural-language
+  engineering question, extracts parameters, invokes QOMN for the
+  numeric answer, and composes the final response with a certified
+  number and its cited standard.
+- **Edge / embedded deployment** — plans compiled via the LLVM AOT
+  backend for offline use, or via the WebAssembly backend for
+  in-browser execution.
+- **ERP / CAD integration** — structured plan invocations from
+  enterprise systems (quotes, inventory, project costing) with
+  bit-exact auditable arithmetic.
+
+---
+
+## Limitations (stated explicitly)
+
+- **57 plans is a sample.** Full coverage requires community
+  contribution from certified engineers in each domain.
+- **No natural-language understanding.** QOMN requires structured plan
+  invocations; pair with an external front-end for NL dispatch.
+- **No open design problems.** QOMN evaluates formulas; it does not
+  choose which formula or load combination applies.
+- **Bit-exactness guaranteed on x86-64 AVX2.** Cross-ISA (ARM Neoverse,
+  etc.) requires `QOMN_NO_FMA=1` and has not been
+  performance-characterized in this release.
+- **No formal verification.** Plans have unit and golden tests; they
+  do not have machine-checked proofs against their cited standards.
+  Formal verification is future work.
+- **Single-author standard library so far.** Plans were drafted by
+  the author and reviewed by professional engineers in the author's
+  network; formal AHJ peer review is future work.
 
 ---
 
