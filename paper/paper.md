@@ -186,14 +186,22 @@ knowledge, no other unit-of-measure system integrates.
 
 ## Live determinism proof
 
-The `/verify` endpoint executes a reference oracle $N$ times and
-returns the FNV-1a hash of the IEEE-754 bit pattern of the result.
-The hash is identical across runs on conforming hardware:
+The `/api/simulation/repeatability` endpoint executes a reference
+plan multiple times and reports whether all runs produced identical
+IEEE-754 bit patterns. The result is stable across runs, restarts,
+and concurrent load on conforming hardware:
 
 ```bash
-curl "https://desarrollador.xyz/verify?runs=20"
-# {"variance":0.000000000000, "all_identical":true, "hash_match":true}
+curl "https://desarrollador.xyz/api/simulation/repeatability"
+# {"ok":true,"type":"DETERMINISM","plan":"plan_pump_sizing","runs":20,
+#  "variance":0.0,"identical_bits":true,
+#  "verdict":"IEEE-754 exact: all runs produce identical bit patterns"}
 ```
+
+A complementary `/api/simulation/jitter_bench` endpoint reports
+scheduling-jitter distribution (p50/p95/p99/p999 latencies) against
+a C++ baseline, demonstrating flatter tail latency under
+`SCHED_FIFO` pinning.
 
 # Performance
 
@@ -225,9 +233,10 @@ a direct speedup claim):
 All benchmarks are publicly verifiable:
 
 ```bash
-curl https://desarrollador.xyz/simulation/jitter_bench
-curl https://desarrollador.xyz/simulation/adversarial
-curl https://desarrollador.xyz/benchmark/vs_llm
+curl https://desarrollador.xyz/api/health
+curl https://desarrollador.xyz/api/simulation/repeatability
+curl https://desarrollador.xyz/api/simulation/jitter_bench
+curl https://desarrollador.xyz/api/benchmark/vs_llm
 ```
 
 # Plan Coverage: A Sample, Not a Catalog
@@ -298,9 +307,10 @@ standards.
 
 Source code is Apache-2.0 at <https://github.com/condesi/qomn>. The
 deployed runtime used for every measurement in this paper is live at
-<https://desarrollador.xyz>; the `/verify`,
-`/simulation/jitter_bench`, and `/benchmark/vs_llm` endpoints require
-no authentication and exercise the same code paths as a local build.
+<https://desarrollador.xyz>; the `/api/simulation/repeatability`,
+`/api/simulation/jitter_bench`, and `/api/benchmark/vs_llm`
+endpoints require no authentication and exercise the same code
+paths as a local build.
 A reproduction script (`scripts/reproduce.sh` in the paper
 repository) replays all measurements and prints a diff against the
 paper's recorded values. Five test suites ship with the runtime:
